@@ -4,8 +4,7 @@ import { Provider } from 'react-redux'
 import store from './store';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './index.css';
-import App from './App';
-import Home from './containers/HomePage'
+import Home from './components/Home'
 import Room from './containers/RoomPage'
 import NotFound from './components/NotFound'
 import * as serviceWorker from './serviceWorker';
