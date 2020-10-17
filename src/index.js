@@ -1,13 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux'
+import store from './store';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './index.css';
 import App from './App';
+import Home from './containers/HomePage'
+import Room from './containers/RoomPage'
+import NotFound from './components/NotFound'
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider store={store}>
+		<BrowserRouter>
+			<Switch>
+				<Route exact path="/" component={Home} />
+				<Route path="/r/:room" component={Room} />
+				<Route path="*" component={NotFound} />
+			</Switch>
+		</BrowserRouter>
+	</Provider>,
   document.getElementById('root')
 );
 
