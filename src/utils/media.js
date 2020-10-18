@@ -14,8 +14,11 @@ const media = ({
 	isVideoEnabled,
 	isAudioEnabled,
   onFull,
-  onHangUp
+  onHangUp,
+  onLocalStream,
+  onRemoteHangup
 }) => {
+  window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
 	const setDescription = (offer) => pc.setLocalDescription(offer);
 	const sendDescription = () => socket.send(pc.localDescription);
 	const setupDataHandlers = () => {
@@ -74,8 +77,32 @@ const media = ({
 		if (isHost) {
 			getUserMedia.then(attachMediaIfReady);
 		}
-	};
+  };
+  const onMessage = (message) => {
+      if (message.type === 'offer') {
+          // set remote description and answer
+          pc.setRemoteDescription(new RTCSessionDescription(message));
+          pc.createAnswer()
+            .then(setDescription)
+            .then(sendDescription)
+            .catch(console.log); // An error occurred, so handle the failure to connect
+
+      } else if (message.type === 'answer') {
+          // set remote description
+          pc.setRemoteDescription(new RTCSessionDescription(message));
+      } else if (message.type === 'candidate') {
+          // add ice candidate
+          pc.addIceCandidate(
+              new RTCIceCandidate({
+                  sdpMLineIndex: message.mlineindex,
+                  candidate: message.candidate
+              })
+          );
+      }
+  }
 	const createCommunication = () => {
+    socket.on('message', onMessage);
+    socket.on('hangup', onRemoteHangup);
 		socket.on('create', onCreate);
 		socket.on('full', onFull);
 		socket.on('bridge', role => init());
@@ -85,7 +112,8 @@ const media = ({
 		getUserMedia.then(stream => {
 			localStream = stream;
 			localStream.getVideoTracks()[0].enabled = isVideoEnabled;
-			localStream.getAudioTracks()[0].enabled = isAudioEnabled;
+      localStream.getAudioTracks()[0].enabled = isAudioEnabled;
+      onLocalStream(stream)
 		});
   };
 

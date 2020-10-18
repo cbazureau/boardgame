@@ -32,8 +32,12 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		() => {
 			const onStream = (stream) => {
         console.log('[Room] onStream');
-				remoteVideo.srcObject = stream;
+				remoteVideo.current.srcObject = stream;
 				setBridge('established');
+      };
+      const onLocalStream = (stream) => {
+        console.log('[Room] onLocalStream');
+				localVideo.current.srcObject = stream;
 			};
 			const onApprove = ({ message, sid }) => {
         console.log('[Room] onApprove', message, sid);
@@ -61,23 +65,32 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				setUser('guest');
       };
 
+      const onRemoteHangup = () => {
+        setBridge('host-hangup');
+				setUser('host');
+      };
+
       addRoom(roomId);
 
 			if (!currentMedia.current) {
         console.log('[Room] new media');
 				currentMedia.current = media({
-					socket,
+					socket: socket.current,
 					onStream,
 					isHost: user === 'host',
-					getUserMedia,
+					getUserMedia: getUserMedia.current,
 					onApprove,
 					onJoin,
 					onCreate,
 					isVideoEnabled,
 					isAudioEnabled,
           onFull,
-          onHangUp
-				});
+          onHangUp,
+          onLocalStream,
+          onRemoteHangup
+        });
+        console.log('[Room] createCommunication');
+        currentMedia.current.createCommunication();
 			}
 		},
 		[ addRoom, isAudioEnabled, isVideoEnabled, roomId, user ]
@@ -97,14 +110,14 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
       video: isVideoEnabled
     }
     console.log('[Room] send', authInfo);
-    socket.emit('auth', authInfo);
+    socket.current.emit('auth', authInfo);
     setBridge('connecting');
   }
   const handleInvitation = (e) => {
     e.preventDefault();
     const status = e.target.dataset.ref;
     console.log('[Room] handleInvitation', status, currentSid);
-    socket.emit([status], currentSid);
+    socket.current.emit([status], currentSid);
     setBridge('connecting');
   }
   const toggleVideo = () => {

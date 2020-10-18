@@ -5,7 +5,7 @@ import store from './store';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './index.css';
 import Home from './components/Home'
-import Room from './components/Room'
+import Room from './components/NewRoom'
 import NotFound from './components/NotFound'
 import * as serviceWorker from './serviceWorker';
 
