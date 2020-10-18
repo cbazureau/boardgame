@@ -26,12 +26,18 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			.catch((e) => alert('getUserMedia() error: ' + e.name))
 	);
 	const currentMedia = useRef();
-	const roomId = match.params.room;
+  const roomId = match.params.room;
+
+  useEffect(() => {
+    if(currentMedia.current) {
+      currentMedia.current.setUser(user);
+    }
+  }, [user])
 
 	useEffect(
 		() => {
-			const onStream = (stream) => {
-        console.log('[Room] onStream');
+			const onRemoteStream = (stream) => {
+        console.log('[Room] onRemoteStream');
 				remoteVideo.current.srcObject = stream;
 				setBridge('established');
       };
@@ -76,8 +82,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
         console.log('[Room] new media');
 				currentMedia.current = media({
 					socket: socket.current,
-					onStream,
-					isHost: user === 'host',
+					onRemoteStream,
 					getUserMedia: getUserMedia.current,
 					onApprove,
 					onJoin,
@@ -134,6 +139,8 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
     console.log('[Room] handleHangup');
     media.hangup();
   }
+
+  console.log('[Room][render] bridge', bridge, user);
 
 	return (
 		<div>

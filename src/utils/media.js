@@ -5,8 +5,7 @@ let localStream = null;
 
 const media = ({
 	socket,
-	onStream,
-	isHost,
+	onRemoteStream,
 	getUserMedia,
 	onApprove,
 	onJoin,
@@ -16,8 +15,9 @@ const media = ({
   onFull,
   onHangUp,
   onLocalStream,
-  onRemoteHangup
+  onRemoteHangup,
 }) => {
+  let user = null;
   window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
 	const setDescription = (offer) => pc.setLocalDescription(offer);
 	const sendDescription = () => socket.send(pc.localDescription);
@@ -27,8 +27,10 @@ const media = ({
 			remoteStream.getVideoTracks()[0].stop();
 			console.log('[Media] The Data Channel is Closed');
 		};
-	};
+  };
+  const setUser = u => user = u;
 	const init = () => {
+    console.log('[Media] init');
 		// wait for local media to be ready
 		const attachMediaIfReady = () => {
 			console.log('[Media] attachMediaIfReady');
@@ -54,12 +56,13 @@ const media = ({
 		};
 		// when the other side added a media stream, show it on screen
 		pc.onaddstream = (e) => {
-			console.log('onaddstream', e);
+			console.log('[media] onaddstream', e);
 			remoteStream = e.stream;
-			onStream(remoteStream);
+			onRemoteStream(remoteStream);
 		};
 		pc.ondatachannel = (e) => {
 			// data channel
+			console.log('[media] ondatachannel', e);
 			dc = e.channel;
 			setupDataHandlers();
 			dc.send(
@@ -71,14 +74,13 @@ const media = ({
 			);
 		};
 		// attach local media to the peer connection
-		localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+		localStream.getTracks().forEach(track => !console.log(track) && pc.addTrack(track, localStream));
 		// call if we were the last to connect (to increase
 		// chances that everything is set up properly at both ends)
-		if (isHost) {
-			getUserMedia.then(attachMediaIfReady);
-		}
+    if(user === 'host') getUserMedia.then(attachMediaIfReady);
   };
   const onMessage = (message) => {
+      console.log('[media] onMessage', message);
       if (message.type === 'offer') {
           // set remote description and answer
           pc.setRemoteDescription(new RTCSessionDescription(message));
@@ -138,6 +140,7 @@ const media = ({
     toggleVideo,
     toggleAudio,
     hangup,
+    setUser,
 	};
 };
 
