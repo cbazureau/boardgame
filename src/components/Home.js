@@ -42,9 +42,6 @@ const Home = ({ rooms }) => {
 };
 
 Home.propTypes = {
-	handleChange: PropTypes.func.isRequired,
-	defaultRoomId: PropTypes.string.isRequired,
-	roomId: PropTypes.string.isRequired,
 	rooms: PropTypes.array.isRequired
 };
 
