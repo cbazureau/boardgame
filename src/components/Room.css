@@ -1,0 +1,28 @@
+
+.Room {
+  display: flex;
+  flex-direction: row;
+  background-color: green;
+  justify-content: flex-end;
+  height: 100vh;
+}
+.Room__videos {
+  background-color: gray;
+  align-items: center;
+  justify-content: flex-start;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+.Room__video {
+  display: block;
+  height: auto;
+  width: 150px;
+  object-fit: cover;
+}
+.Room__video.is-local {
+  filter: grayscale(0.8);
+}
+.Room__videos:not(.established) .Room__video.is-remote {
+  display: none;
+}

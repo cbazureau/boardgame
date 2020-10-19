@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import store from "../store";
 import io from "socket.io-client";
 import media from "../utils/media";
+import './Room.css';
 
 /**
  * Room
@@ -131,26 +132,26 @@ const Room = ({
   };
   const toggleVideo = () => {
     console.log("[Room] toggleVideo", !isVideoEnabled);
-    media.toggleVideo(!isVideoEnabled);
+    currentMedia.current.toggleVideo(!isVideoEnabled);
     setVideo(!isVideoEnabled);
   };
   const toggleAudio = () => {
     console.log("[Room] toggleAudio", !isAudioEnabled);
-    media.toggleAudio(!isAudioEnabled);
+    currentMedia.current.toggleAudio(!isAudioEnabled);
     setAudio(!isAudioEnabled);
   };
   const handleHangup = () => {
     console.log("[Room] handleHangup");
-    media.hangup();
+    currentMedia.current.hangup();
   };
 
   console.log("[Room][render] bridge", bridge, user);
 
   return (
-    <div>
-      <div className={`media-bridge ${bridge}`}>
-        <video className="remote-video" ref={remoteVideo} autoPlay />
-        <video className="local-video" ref={localVideo} autoPlay muted />
+    <div className="Room">
+      <div className={`Room__videos ${bridge}`}>
+        <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
+        <video className="Room__video is-local" ref={localVideo} autoPlay muted />
       </div>
       <Communication
         message={currentMessage}

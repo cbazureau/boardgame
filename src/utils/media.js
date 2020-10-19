@@ -120,10 +120,10 @@ const media = ({
   };
 
   const toggleAudio = enabled => {
-		localStream.getAudioTracks()[0].enabled = enabled;
+    localStream.getAudioTracks()[0].enabled = enabled;
   }
   const toggleVideo = enabled => {
-		localStream.getAudioTracks()[0].enabled = enabled;
+		localStream.getVideoTracks()[0].enabled = enabled;
   }
 
   const hangup = () => {

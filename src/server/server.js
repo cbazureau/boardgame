@@ -26,6 +26,7 @@ io.sockets.on('connection', (socket) => {
 	// sending to all clients in the room (channel) except sender
 	socket.on('message', (message) => socket.broadcast.to(room).emit('message', message));
 	socket.on('find', () => {
+    console.log('[server] find', socket.id)
 		const url = socket.request.headers.referer.split('/');
 		room = url[url.length - 1];
 		const sr = io.sockets.adapter.rooms[room];
@@ -41,17 +42,20 @@ io.sockets.on('connection', (socket) => {
 		}
 	});
 	socket.on('auth', (data) => {
+    console.log('[server] auth', socket.id)
 		data.sid = socket.id;
 		// sending to all clients in the room (channel) except sender
 		socket.broadcast.to(room).emit('approve', data);
 	});
 	socket.on('accept', (id) => {
+    console.log('[server] accept', socket.id)
 		io.sockets.connected[id].join(room);
 		// sending to all clients in 'game' room(channel), include sender
 		io.in(room).emit('bridge');
 	});
 	socket.on('reject', () => socket.emit('full'));
 	socket.on('leave', () => {
+    console.log('[server] leave', socket.id)
 		// sending to all clients in the room (channel) except sender
 		socket.broadcast.to(room).emit('hangup');
 		socket.leave(room);
