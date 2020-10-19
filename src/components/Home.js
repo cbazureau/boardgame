@@ -45,6 +45,6 @@ Home.propTypes = {
 	rooms: PropTypes.array.isRequired
 };
 
-const mapStateToProps = (store) => ({ rooms: store.rooms });
+const mapStateToProps = ({ rtc }) => ({ rooms: rtc.rooms });
 
 export default connect(mapStateToProps)(Home);
