@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Communication from "../components/Communication";
+import Communication from "./Communication";
 import { connect } from "react-redux";
 import store from "../store";
 import io from "socket.io-client";
@@ -155,7 +155,6 @@ const Room = ({
       </div>
       <Communication
         message={currentMessage}
-        sid={currentSid}
         audio={isAudioEnabled}
         video={isVideoEnabled}
         toggleVideo={toggleVideo}
