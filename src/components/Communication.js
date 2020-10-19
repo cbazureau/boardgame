@@ -38,7 +38,7 @@ const Communication = ({
 					/>
 				</svg>
 			</button>
-			<button onClick={props.toggleVideo} className={'video-button-' + video}>
+			<button onClick={toggleVideo} className={'video-button-' + video}>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" className="svg">
 					<path
 						className="on"
