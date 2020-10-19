@@ -110,7 +110,7 @@ input[type=text] {
 .guest-hangup + .auth .you-left {
     display: inline;
 }
-.full .room-occupied,
+.full + .auth .room-occupied,
 .host-hangup + .auth .remote-left,
 .recent-room {
 	display: block;
