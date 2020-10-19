@@ -38,86 +38,23 @@ input[type=text] {
     justify-content: center;
     align-items: center;
 }
-.call-exit-button,
-.hangup-button,
-.audio-button-true,
-.audio-button-false,
-.video-button-true,
-.video-button-false,
-.fullscreen-button {
-    width: 3em;
-    height: 3em;
-    border-radius: 50%;
-    background: rgba(44, 44, 44, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    box-shadow: .2ex .2ex 1.5em #444;
-    transition: all .2s ease-out;
-    margin: 0 .4em;
-    cursor: pointer;
-}
-.call-exit-button:hover,
-.hangup-button:hover,
-.audio-button-true:hover,
-.audio-button-false:hover,
-.video-button-true:hover,
-.video-button-false:hover,
-.fullscreen-button:hover {
-    box-shadow: .4ex .4ex 3em #666;
-    background: rgba(64, 124, 247, 1)
-}
+
 .you-left,
 .remote-left,
-.hangup-button,
-.audio-button-true .on,
-.video-button-true .on,
-.video-button-false .off,
-.fullscreen-button .on,
 .room-occupied {
 	display: none;
-}
-:-webkit-full-screen .fullscreen-button .on {
-    display: block;
-}
-:-moz-full-screen .fullscreen-button .on {
-    display: block;
-}
-:-ms-fullscreen .fullscreen-button .on {
-    display: block;
-}
-:fullscreen .fullscreen-button .on { /* spec */
-    display: block;
-}
-:-webkit-full-screen .fullscreen-button .off {
-    display: none;
-}
-:-moz-full-screen .fullscreen-button .off {
-    display: none;
-}
-:-ms-fullscreen .fullscreen-button .off {
-    display: none;
-}
-:fullscreen .fullscreen-button .off { /* spec */
-    display: none;
-}
-/* deeper elements */
-:-webkit-full-screen video {
-  width: 100%;
-  height: 100%;
 }
 .guest-hangup + .auth .you-left {
     display: inline;
 }
 .full + .auth .room-occupied,
-.host-hangup + .auth .remote-left,
-.recent-room {
+.host-hangup + .auth .remote-left {
 	display: block;
 }
 .recent-room {
-    color: #4285F4;
-    margin: 1ex 1em;
+  display: block;
+  color: #4285F4;
+  margin: 1ex 1em;
 }
 
 .auth {
@@ -147,16 +84,7 @@ input[type=text] {
     -moz-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
     box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
 }
-.media-controls {
-    display: flex;
-    margin: 2ex 0;
-    justify-content: center;
-    left: 0;
-    right: 0;
-}
-.svg {
-    width: 1.4em;
-}
+
 .room-occupied,
 .request-access,
 .waiting,
@@ -184,7 +112,4 @@ input[type=text] {
 .create + .auth .waiting {
     /* Set the max-height to something large. In this case there's an obvious limit. */
     max-height: 20ex;
-}
-.established + .auth .hangup-button {
-    display: flex;
 }

@@ -14,10 +14,13 @@
   height: 100%;
   flex-direction: column;
 }
+.Room__videobox {
+  position: relative;
+}
 .Room__video {
   display: block;
   height: auto;
-  width: 150px;
+  width: 200px;
   object-fit: cover;
 }
 .Room__video.is-local {

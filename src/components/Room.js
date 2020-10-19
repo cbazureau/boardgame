@@ -5,6 +5,7 @@ import store from "../store";
 import io from "socket.io-client";
 import media from "../utils/media";
 import './Room.css';
+import RoomControls from "./RoomControl";
 
 /**
  * Room
@@ -150,17 +151,25 @@ const Room = ({
   return (
     <div className="Room">
       <div className={`Room__videos ${bridge}`}>
-        <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
-        <video className="Room__video is-local" ref={localVideo} autoPlay muted />
+        <div className="Room__videobox">
+          <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
+        </div>
+        <div className="Room__videobox">
+          <video className="Room__video is-local" ref={localVideo} autoPlay muted />
+          <RoomControls
+            bridge={bridge}
+            audio={isAudioEnabled}
+            video={isVideoEnabled}
+            toggleVideo={toggleVideo}
+            toggleAudio={toggleAudio}
+            handleHangup={handleHangup}
+          />
+        </div>
       </div>
       <Communication
+        bridge={bridge}
         message={currentMessage}
-        audio={isAudioEnabled}
-        video={isVideoEnabled}
-        toggleVideo={toggleVideo}
-        toggleAudio={toggleAudio}
         send={send}
-        handleHangup={handleHangup}
         handleInput={handleInput}
         handleInvitation={handleInvitation}
       />
