@@ -2,22 +2,22 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
+  margin-top: 4px;
   justify-content: center;
   top: 0;
-  left: 0;
+  left: -44px;
   z-index: 1;
 }
 
 .svg {
-  width: 15px;
+  width: 16px;
 }
 
 .RoomControls__control {
-  min-width: 30px;
+  min-width: 28px;
   display: block;
   border-radius: 50%;
-  height: 30px;
+  height: 28px;
   background: rgba(44, 44, 44, 0.6);
   display: flex;
   align-items: center;
@@ -25,7 +25,7 @@
   border: 0;
   box-shadow: .2ex .2ex 1.5em #444;
   transition: all .2s ease-out;
-  margin: 5px;
+  margin: 4px;
   cursor: pointer;
 }
 
