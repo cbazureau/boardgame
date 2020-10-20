@@ -2,34 +2,30 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  margin-top: 4px;
   justify-content: center;
-  top: 0;
-  left: -44px;
+  top: 2px;
+  right: 2px;
   z-index: 1;
 }
 
-.svg {
-  width: 16px;
-}
-
 .RoomControls__control {
-  min-width: 28px;
+  min-width: 30px;
   display: block;
-  border-radius: 50%;
-  height: 28px;
+  height: 30px;
   background: rgba(44, 44, 44, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 0;
-  box-shadow: .2ex .2ex 1.5em #444;
   transition: all .2s ease-out;
-  margin: 4px;
+  margin: 2px;
   cursor: pointer;
 }
 
+.RoomControls__control .svg {
+  width: 18px;
+}
+
 .RoomControls__control:hover {
-  box-shadow: .4ex .4ex 3em #666;
   background: rgba(64, 124, 247, 1)
 }
