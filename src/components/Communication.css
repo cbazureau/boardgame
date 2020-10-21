@@ -1,0 +1,25 @@
+
+.Communication {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.Communication__box {
+  overflow: hidden;
+  padding: 0 1em;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 600px;
+  background: rgba(0, 0, 0, .8);
+  /* Initially we don't want any height, and we want the contents to be hidden */
+  max-height: 200px;
+  transition: max-height .3s ease;
+}
+

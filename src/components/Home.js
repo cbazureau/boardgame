@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import './Home.css';
 
 const DEFAULT_ROOM = String(new Date() - new Date().setHours(0, 0, 0, 0));
 
@@ -9,7 +10,7 @@ const Home = ({ rooms }) => {
 	const [ roomId, setRoomId ] = useState(DEFAULT_ROOM);
 	const handleChange = (e) => setRoomId(e.target.value);
 	return (
-		<div className="home">
+		<div className="Home">
 			<div>
 				<h1 itemProp="headline">Webrtc Video Room</h1>
 				<p>Please enter a room name.</p>
@@ -32,7 +33,7 @@ const Home = ({ rooms }) => {
 				</Link>
 				{rooms.length !== 0 && <div>Recently used rooms:</div>}
 				{rooms.map((room) => (
-					<Link key={room} className="recent-room" to={'/r/' + room}>
+					<Link key={room} className="Home__recent" to={'/r/' + room}>
 						{room}
 					</Link>
 				))}

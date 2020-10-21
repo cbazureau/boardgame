@@ -1,0 +1,12 @@
+
+.Home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Home__recent {
+  display: block;
+  color: #4285F4;
+  margin: 1ex 1em;
+}

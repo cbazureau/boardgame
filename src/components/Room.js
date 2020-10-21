@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import store from "../store";
 import io from "socket.io-client";
 import media from "../utils/media";
+import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import RoomControls from "./RoomControl";
 
@@ -36,6 +37,13 @@ const Room = ({
   );
   const currentMedia = useRef();
   const roomId = match.params.room;
+
+  useBeforeUnload(() => {
+    if(currentMedia.current) {
+      console.log("[Room] useBeforeUnload handleHangup");
+      currentMedia.current.hangup();
+    }
+  })
 
   useEffect(() => {
     if (currentMedia.current) {
@@ -145,6 +153,7 @@ const Room = ({
     console.log("[Room] handleHangup");
     currentMedia.current.hangup();
   };
+
 
   console.log("[Room][render] bridge", bridge, user);
 
