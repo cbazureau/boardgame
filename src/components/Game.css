@@ -1,0 +1,7 @@
+.Game__board {
+  max-height: 95vh;
+}
+.Game {
+  display: flex;
+  justify-content: center;
+}

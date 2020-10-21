@@ -2,10 +2,14 @@
 .Room {
   display: flex;
   flex-direction: row;
-  background-color: green;
   justify-content: flex-end;
   height: 100vh;
 }
+.Room__game {
+  flex: 1;
+  background-color: white;
+}
+
 .Room__videos {
   background-color: gray;
   align-items: center;

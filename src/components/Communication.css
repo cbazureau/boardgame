@@ -9,6 +9,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: rgba(0, 0, 0, .5);
 }
 
 .Communication__box {
@@ -17,9 +18,10 @@
   box-sizing: border-box;
   width: 100%;
   max-width: 600px;
-  background: rgba(0, 0, 0, .8);
+  background: white;
   /* Initially we don't want any height, and we want the contents to be hidden */
   max-height: 200px;
   transition: max-height .3s ease;
+  color: #444;
 }
 

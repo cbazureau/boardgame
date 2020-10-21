@@ -7,6 +7,7 @@ import media from "../utils/media";
 import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import RoomControls from "./RoomControl";
+import Game from "./Game";
 
 /**
  * Room
@@ -159,6 +160,9 @@ const Room = ({
 
   return (
     <div className="Room">
+      <div className="Room__game">
+        <Game />
+      </div>
       <div className={`Room__videos ${bridge}`}>
         <div className="Room__videobox">
           <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
