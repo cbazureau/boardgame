@@ -1,5 +1,7 @@
 .Game__board {
-  max-height: 95vh;
+  height: 500px;
+  width: 500px;
+  border: 1px solid purple;
 }
 .Game {
   display: flex;
