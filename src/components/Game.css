@@ -1,9 +1,10 @@
-.Game__board {
-  height: 500px;
-  width: 500px;
-  border: 1px solid purple;
-}
+
 .Game {
   display: flex;
   justify-content: center;
+}
+
+.Game__limits {
+  border: 1px solid purple;
+  position: relative;
 }
