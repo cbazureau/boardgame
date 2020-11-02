@@ -8,7 +8,15 @@ const game = {
 	playerRequired: {
 		min: 2,
 		max: 2
-	},
+  },
+  sprites: [{
+    id: '1',
+    src: '/img/chess/spritesheet.png',
+    size: {
+      width: 300,
+      height: 100,
+    },
+  }],
 	availableObjects: [
 		{
 			id: 'main_board',
@@ -23,16 +31,11 @@ const game = {
 		{
 			id: 'white_pawn',
 			type: 'pawn',
-			canMove: true,
-			src: '/img/chess/spritesheet.png',
-			isSpriteSheet: true,
+      canMove: true,
+      spriteId: '1',
 			inSpritePosition: {
 				top: 0,
 				left: 250
-      },
-      spriteTotalSize: {
-        width: 300,
-        height: 100,
       },
 			size: {
 				width: 50,

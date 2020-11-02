@@ -27,8 +27,9 @@ const Game = () => {
 			if (imageLoaded) return;
 			const loadImages = async () => {
 				const imgs = game.objects.reduce((acc, obj) => {
-					const objDef = game.availableObjects.find((o) => o.id === obj.type);
-					return acc.includes(objDef.src) ? acc : [ ...acc, objDef.src ];
+          const objDef = game.availableObjects.find((o) => o.id === obj.type);
+          const src = objDef.spriteId ? game.sprites.find((s) => s.id === objDef.spriteId).src : objDef.src;
+					return acc.includes(src) ? acc : [ ...acc, src ];
         }, []);
         const a = await imageLoader(imgs);
 				setImageLoaded(a);
@@ -41,10 +42,17 @@ const Game = () => {
   const objects = useMemo(() => {
     if(!imageLoaded) return [];
     return game.objects.map(
-      obj => ({
-        def: game.availableObjects.find((o) => o.id === obj.type),
+      obj => {
+      let sprite = undefined;
+      const def = game.availableObjects.find((o) => o.id === obj.type);
+      if(def.spriteId) {
+        sprite = game.sprites.find((s) => s.id === def.spriteId);
+      }
+      return {
+        def: {...def, sprite},
         obj,
-      })
+      };
+    }
     );
 
   }, [imageLoaded]);
