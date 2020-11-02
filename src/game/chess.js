@@ -56,39 +56,39 @@ const game = {
 			id: 2,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
-				left: 98
+				top: 100,
+				left: 100
 			}
 		},
 		{
 			id: 4,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
-				left: 148
+				top: 100,
+				left: 150
 			}
 		},
 		{
 			id: 5,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
-				left: 199
+				top: 100,
+				left: 200
 			}
 		},
 		{
 			id: 6,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
-				left: 48
+				top: 100,
+				left: 50
 			}
 		},
 		{
 			id: 7,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
+				top: 100,
 				left: 250
 			}
 		},
@@ -96,24 +96,24 @@ const game = {
 			id: 8,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
-				left: 301
+				top: 100,
+				left: 300
 			}
 		},
 		{
 			id: 9,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
-				left: 352
+				top: 100,
+				left: 350
 			}
 		},
 		{
 			id: 10,
 			type: 'white_pawn',
 			pos: {
-				top: 97,
-				left: 403
+				top: 100,
+				left: 400
 			}
 		}
 	]

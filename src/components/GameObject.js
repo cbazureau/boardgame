@@ -4,7 +4,7 @@ import "./Game.css";
 const GameObject = ({ def, obj }) => {
   const [isHovered, setHovered] = useState(false);
   const styles = {
-    border: isHovered ? "1px solid red" : "1px solid transparent",
+    'background-color': isHovered ? "red" : "transparent",
     position: "absolute",
     top: `${obj.pos.top}px`,
     left: `${obj.pos.left}px`,
