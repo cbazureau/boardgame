@@ -3,8 +3,9 @@ import "./Game.css";
 
 const GameObject = ({ def, obj }) => {
   const [isHovered, setHovered] = useState(false);
+  const [isSelected, setSelected] = useState(false);
   const styles = {
-    'background-color': isHovered ? "red" : "transparent",
+    'background-color': isSelected ? 'red' : (isHovered ? "green" : "transparent"),
     position: "absolute",
     top: `${obj.pos.top}px`,
     left: `${obj.pos.left}px`,
@@ -24,6 +25,7 @@ const GameObject = ({ def, obj }) => {
       style={styles}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => setSelected(!isSelected)}
     />
   );
 };
