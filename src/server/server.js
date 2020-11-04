@@ -1,26 +1,17 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const http = require('http');
-const https = require('https');
 const sio = require('socket.io');
 const compression = require('compression');
 
-const app = express(),
-	options = {
-		key: fs.readFileSync(__dirname + '/rtc-video-room-key.pem'),
-		cert: fs.readFileSync(__dirname + '/rtc-video-room-cert.pem')
-	},
-	port = process.env.PORT || 5000,
-	server =
-		process.env.NODE_ENV === 'production'
-			? http.createServer(app).listen(port)
-			: https.createServer(options, app).listen(port),
-  io = sio(server, { origins: '*:*' });
+const app = express();
+const port = process.env.PORT || 5000;
+const server = http.createServer(app).listen(port);
+const io = sio(server, { origins: '*:*' });
 
 if(process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'dist')));
-  app.use((req, res) => res.sendFile(__dirname + '/dist/index.html'));
+  app.use(express.static(path.join(__dirname, '../../build')));
+  app.use((req, res) => res.sendFile(__dirname + '../../build/index.html'));
 } else {
   app.get('/', (req, res) => res.json({ status: 'ok' }));
 }

@@ -23,6 +23,7 @@ const Room = ({
 }) => {
   // For debugging
   const gameOnly = false;
+  const socketDomain = window.location.host === 'localhost:3000' ? 'localhost:5000' : window.location.host;
 
   const [bridge, setBridge] = useState("");
   const [user, setUser] = useState("");
@@ -30,7 +31,7 @@ const Room = ({
   const [currentSid, setSid] = useState("");
   const remoteVideo = useRef(null);
   const localVideo = useRef(null);
-  const socket = useRef(io.connect("https://localhost:5000"));
+  const socket = useRef(io.connect(`http://${socketDomain}`));
   const getUserMedia = useRef(
     !gameOnly && navigator.mediaDevices
       .getUserMedia({
