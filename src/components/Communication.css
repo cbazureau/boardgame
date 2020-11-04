@@ -12,16 +12,21 @@
   background: rgba(0, 0, 0, .5);
 }
 
+.Communication__input[type=text] {
+  color: #444;
+  margin: 20px auto;
+}
+
 .Communication__box {
-  overflow: hidden;
-  padding: 0 1em;
-  box-sizing: border-box;
+  text-align: center;
+  padding: 20px;
   width: 100%;
+  font-size: 1.4rem;
+  line-height: 1.5;
   max-width: 600px;
   background: white;
   /* Initially we don't want any height, and we want the contents to be hidden */
-  max-height: 200px;
-  transition: max-height .3s ease;
+  height: 300px;
   color: #444;
 }
 

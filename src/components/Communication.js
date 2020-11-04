@@ -9,7 +9,7 @@ const Communication = ({
 	handleInvitation,
   message,
   bridge,
-}) => (
+}) => bridge !== "established" ? (
 	<div className="Communication">
 		{(bridge === 'guest-hangup' || bridge === 'join') && <div className="Communication__box">
 			<p>
@@ -17,7 +17,8 @@ const Communication = ({
 			</p>
 			<form onSubmit={send}>
 				<input
-					type="text"
+          type="text"
+          className="Communication__input"
 					autoFocus
 					onChange={handleInput}
 					data-ref="message"
@@ -53,7 +54,7 @@ const Communication = ({
 			</p>
 		</div>}
 	</div>
-);
+) : null;
 
 Communication.propTypes = {
   message: PropTypes.string.isRequired,
