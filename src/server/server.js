@@ -4,6 +4,7 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const sio = require('socket.io');
+const compression = require('compression');
 
 const app = express(),
 	options = {
@@ -20,9 +21,10 @@ const app = express(),
 if(process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
   app.use((req, res) => res.sendFile(__dirname + '/dist/index.html'));
+} else {
+  app.get('/', (req, res) => res.json({ status: 'ok' }));
 }
-
-app.get('/', (req, res) => res.json({ status: 'ok' }));
+app.use(compression());
 // Switch off the default 'X-Powered-By: Express' header
 app.disable('x-powered-by');
 io.sockets.on('connection', (socket) => {
