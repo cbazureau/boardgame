@@ -22,7 +22,7 @@ const Room = ({
   setAudio,
 }) => {
   // For debugging
-  const gameOnly = true;
+  const gameOnly = false;
 
   const [bridge, setBridge] = useState("");
   const [user, setUser] = useState("");

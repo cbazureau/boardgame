@@ -1,5 +1,5 @@
 const express = require('express');
-// const path = require('path');
+const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -15,9 +15,13 @@ const app = express(),
 		process.env.NODE_ENV === 'production'
 			? http.createServer(app).listen(port)
 			: https.createServer(options, app).listen(port),
-	io = sio(server, { origins: '*:*' });
-// app.use(express.static(path.join(__dirname, 'dist')));
-// app.use((req, res) => res.sendFile(__dirname + '/dist/index.html'));
+  io = sio(server, { origins: '*:*' });
+
+if(process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'dist')));
+  app.use((req, res) => res.sendFile(__dirname + '/dist/index.html'));
+}
+
 app.get('/', (req, res) => res.json({ status: 'ok' }));
 // Switch off the default 'X-Powered-By: Express' header
 app.disable('x-powered-by');
