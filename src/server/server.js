@@ -11,7 +11,7 @@ const io = sio(server, { origins: '*:*' });
 
 if(process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../build')));
-  app.use((req, res) => res.sendFile(__dirname + '../../build/index.html'));
+  app.use((req, res) => res.sendFile(path.join(__dirname, '../../build/index.html')));
 } else {
   app.get('/', (req, res) => res.json({ status: 'ok' }));
 }
