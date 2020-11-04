@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import Communication from "./Communication";
 import { connect } from "react-redux";
 import store from "../store";
@@ -21,6 +21,9 @@ const Room = ({
   setVideo,
   setAudio,
 }) => {
+  // For debugging
+  const gameOnly = false;
+
   const [bridge, setBridge] = useState("");
   const [user, setUser] = useState("");
   const [currentMessage, setMessage] = useState("");
@@ -29,7 +32,7 @@ const Room = ({
   const localVideo = useRef(null);
   const socket = useRef(io.connect("https://localhost:5000"));
   const getUserMedia = useRef(
-    navigator.mediaDevices
+    !gameOnly && navigator.mediaDevices
       .getUserMedia({
         audio: true,
         video: true,
@@ -95,7 +98,7 @@ const Room = ({
 
     addRoom(roomId);
 
-    if (!currentMedia.current) {
+    if (!currentMedia.current && !gameOnly) {
       console.log("[Room] new media");
       currentMedia.current = media({
         socket: socket.current,
@@ -114,7 +117,7 @@ const Room = ({
       console.log("[Room] createCommunication");
       currentMedia.current.createCommunication();
     }
-  }, [addRoom, isAudioEnabled, isVideoEnabled, roomId, user]);
+  }, [addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly]);
 
   const handleInput = (e) => {
     const msg = e.target.value;
@@ -155,14 +158,13 @@ const Room = ({
     currentMedia.current.hangup();
   };
 
-
-  console.log("[Room][render] bridge", bridge, user);
-
   return (
     <div className="Room">
       <div className="Room__game">
         <Game />
       </div>
+      {!gameOnly &&
+      <Fragment>
       <div className={`Room__videos ${bridge}`}>
         <div className="Room__videobox">
           <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
@@ -186,6 +188,7 @@ const Room = ({
         handleInput={handleInput}
         handleInvitation={handleInvitation}
       />
+      </Fragment>}
     </div>
   );
 };

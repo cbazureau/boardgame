@@ -1,7 +1,10 @@
-.Game__board {
-  max-height: 95vh;
-}
+
 .Game {
   display: flex;
   justify-content: center;
+}
+
+.Game__limits {
+  border: 1px solid purple;
+  position: relative;
 }
