@@ -55,6 +55,7 @@ io.sockets.on('connection', (socket) => {
 			// max two clients
 			socket.emit('full', room);
 		}
+		io.to('room').emit('update', { game: rooms[room].game });
 	});
 
 	// auth
@@ -62,6 +63,13 @@ io.sockets.on('connection', (socket) => {
 		console.log('[server] auth', socket.id);
 		data.sid = socket.id;
 		socket.broadcast.to(room).emit('approve', data);
+	});
+
+	// play
+	socket.on('play', ({ game }) => {
+		console.log('[server] play', socket.id);
+		rooms[room].game = game;
+		io.to('room').emit('update', { game: rooms[room].game });
 	});
 
 	// accept

@@ -14,7 +14,7 @@ import STATUS from '../utils/status';
  * Room
  * Create or access to a room
  */
-const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAudio, game }) => {
+const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAudio, game, updateGame }) => {
 	// For debugging
 	const gameOnly = false;
 	const socketDomain = window.location.host === 'localhost:3000' ? 'localhost:5000' : window.location.host;
@@ -122,10 +122,11 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				socket.current.on('full', onFull);
 				socket.current.on('join', onJoin);
 				socket.current.on('approve', onApprove);
+				socket.current.on('update', updateGame);
 				socket.current.emit('find', { roomId, user: 'Bob', game });
 			}
 		},
-		[ addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly, game ]
+		[ addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly, game, updateGame ]
 	);
 
 	const handleInput = (e) => {
@@ -210,6 +211,7 @@ const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } 
 	isAudioEnabled
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
+	updateGame: ({ game }) => store.dispatch({ type: 'UPDATE_GAME', game }),
 	addRoom: (roomId) => store.dispatch({ type: 'ADD_ROOM', room: roomId }),
 	setVideo: (enabled) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),
 	setAudio: (enabled) => store.dispatch({ type: 'SET_AUDIO', isAudioEnabled: enabled })
