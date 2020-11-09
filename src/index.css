@@ -1,56 +1,105 @@
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,600");
+
+:root {
+  --gray: #414f57;
+  --white: #ffffff;
+  --main: #ff7496;
+  --green: #1cb495;
+}
+html,
 body,
-input,
-button {
-    font-size: 1.6vw;
-    margin: 0;
-    font-family: Sans-Serif;
-}
-body {
-  background: #333;
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
   margin: 0;
-  color: #eee;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
 }
-@media(max-width: 1024px) {
-    body,
-    input,
-    button {
-        font-size: 1em;
-    }
+
+html {
+  font-size: 62.5%;
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
 }
 input:focus,
 button:focus {
-    outline:0;
-}
-input[type=text] {
-    border: none;
-    border-bottom: solid 2px #4c4c4f;
-    font-size: 1em;
-    background-color: transparent;
-    color: #fff;
-    padding: .4em 0;
-    margin: 2ex 0;
-    width: 100%;
-    max-width: 18em;
-    display: block;
-}
-.primary-button {
-    text-decoration: none;
-    display: inline-block;
-    cursor: pointer;
-    background-color: #4285F4;
-    border: none;
-    color: white;
-    font-size: 0.8em;
-    margin: 0 5px 20px 5px;
-    width: 8em;
-    line-height: 3ex;
-    padding: 1ex 0.7em;
-    text-align: center;
-    -webkit-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
-    -moz-box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
-    box-shadow: 1px 1px 5px 0 rgba(0,0,0,.5);
-}
-
-a {
-  color: #4285F4;
+  outline: 0;
 }

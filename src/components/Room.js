@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import store from "../store";
 import io from "socket.io-client";
 import media from "../utils/media";
-import useBeforeUnload from '../utils/useBeforeUnload';
-import './Room.css';
+import useBeforeUnload from "../utils/useBeforeUnload";
+import "./Room.css";
 import RoomControls from "./RoomControl";
 import Game from "./Game";
 
@@ -23,8 +23,12 @@ const Room = ({
 }) => {
   // For debugging
   const gameOnly = false;
-  const socketDomain = window.location.host === 'localhost:3000' ? 'localhost:5000' : window.location.host;
-  const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
+  const socketDomain =
+    window.location.host === "localhost:3000"
+      ? "localhost:5000"
+      : window.location.host;
+  const protocol =
+    window.location.host.indexOf("localhost") > -1 ? "http" : "https";
 
   const [bridge, setBridge] = useState("");
   const [user, setUser] = useState("");
@@ -34,22 +38,23 @@ const Room = ({
   const localVideo = useRef(null);
   const socket = useRef(io.connect(`${protocol}://${socketDomain}`));
   const getUserMedia = useRef(
-    !gameOnly && navigator.mediaDevices
-      .getUserMedia({
-        audio: true,
-        video: true,
-      })
-      .catch((e) => alert("getUserMedia() error: " + e.name))
+    !gameOnly &&
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+          video: true,
+        })
+        .catch((e) => alert("getUserMedia() error: " + e.name))
   );
   const currentMedia = useRef();
   const roomId = match.params.room;
 
   useBeforeUnload(() => {
-    if(currentMedia.current) {
+    if (currentMedia.current) {
       console.log("[Room] useBeforeUnload handleHangup");
       currentMedia.current.hangup();
     }
-  })
+  });
 
   useEffect(() => {
     if (currentMedia.current) {
@@ -118,6 +123,12 @@ const Room = ({
       });
       console.log("[Room] createCommunication");
       currentMedia.current.createCommunication();
+      socket.current.on("hangup", onRemoteHangup);
+      socket.current.on("create", onCreate);
+      socket.current.on("full", onFull);
+      socket.current.on("join", onJoin);
+      socket.current.on("approve", onApprove);
+      socket.current.emit("find");
     }
   }, [addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly]);
 
@@ -165,32 +176,42 @@ const Room = ({
       <div className="Room__game">
         <Game />
       </div>
-      {!gameOnly &&
-      <Fragment>
-      <div className={`Room__videos ${bridge}`}>
-        <div className="Room__videobox">
-          <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
-        </div>
-        <div className="Room__videobox">
-          <video className="Room__video is-local" ref={localVideo} autoPlay muted />
-          <RoomControls
+      {!gameOnly && (
+        <Fragment>
+          <div className={`Room__videos ${bridge}`}>
+            <div className="Room__videobox">
+              <video
+                className="Room__video is-remote"
+                ref={remoteVideo}
+                autoPlay
+              />
+            </div>
+            <div className="Room__videobox">
+              <video
+                className="Room__video is-local"
+                ref={localVideo}
+                autoPlay
+                muted
+              />
+              <RoomControls
+                bridge={bridge}
+                audio={isAudioEnabled}
+                video={isVideoEnabled}
+                toggleVideo={toggleVideo}
+                toggleAudio={toggleAudio}
+                handleHangup={handleHangup}
+              />
+            </div>
+          </div>
+          <Communication
             bridge={bridge}
-            audio={isAudioEnabled}
-            video={isVideoEnabled}
-            toggleVideo={toggleVideo}
-            toggleAudio={toggleAudio}
-            handleHangup={handleHangup}
+            message={currentMessage}
+            send={send}
+            handleInput={handleInput}
+            handleInvitation={handleInvitation}
           />
-        </div>
-      </div>
-      <Communication
-        bridge={bridge}
-        message={currentMessage}
-        send={send}
-        handleInput={handleInput}
-        handleInvitation={handleInvitation}
-      />
-      </Fragment>}
+        </Fragment>
+      )}
     </div>
   );
 };
@@ -199,8 +220,10 @@ const mapStateToProps = ({
   rtc: { rooms, isVideoEnabled, isAudioEnabled },
 }) => ({ rooms, isVideoEnabled, isAudioEnabled });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  addRoom: roomId => store.dispatch({ type: "ADD_ROOM", room: roomId }),
-  setVideo: enabled => store.dispatch({ type: "SET_VIDEO", isVideoEnabled: enabled }),
-  setAudio: enabled => store.dispatch({ type: "SET_AUDIO", isAudioEnabled: enabled }),
+  addRoom: (roomId) => store.dispatch({ type: "ADD_ROOM", room: roomId }),
+  setVideo: (enabled) =>
+    store.dispatch({ type: "SET_VIDEO", isVideoEnabled: enabled }),
+  setAudio: (enabled) =>
+    store.dispatch({ type: "SET_AUDIO", isAudioEnabled: enabled }),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Room);
