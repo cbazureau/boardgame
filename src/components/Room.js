@@ -14,7 +14,7 @@ import STATUS from '../utils/status';
  * Room
  * Create or access to a room
  */
-const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAudio }) => {
+const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAudio, game }) => {
 	// For debugging
 	const gameOnly = false;
 	const socketDomain = window.location.host === 'localhost:3000' ? 'localhost:5000' : window.location.host;
@@ -109,16 +109,11 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				currentMedia.current = media({
 					socket: socket.current,
 					onRemoteStream,
+					onLocalStream,
 					getUserMedia: getUserMedia.current,
-					onApprove,
-					onJoin,
-					onCreate,
 					isVideoEnabled,
 					isAudioEnabled,
-					onFull,
-					onHangUp,
-					onLocalStream,
-					onRemoteHangup
+					onHangUp
 				});
 				console.log('[Room] createCommunication');
 				currentMedia.current.createCommunication();
@@ -127,10 +122,10 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				socket.current.on('full', onFull);
 				socket.current.on('join', onJoin);
 				socket.current.on('approve', onApprove);
-				socket.current.emit('find', { roomId });
+				socket.current.emit('find', { roomId, user: 'Bob', game });
 			}
 		},
-		[ addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly ]
+		[ addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly, game ]
 	);
 
 	const handleInput = (e) => {
@@ -175,7 +170,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	return (
 		<div className="Room">
 			<div className="Room__game">
-				<Game />
+				<Game game={game} />
 			</div>
 			{!gameOnly && (
 				<Fragment>
@@ -208,7 +203,8 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	);
 };
 
-const mapStateToProps = ({ rtc: { rooms, isVideoEnabled, isAudioEnabled } }) => ({
+const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } }) => ({
+	game,
 	rooms,
 	isVideoEnabled,
 	isAudioEnabled

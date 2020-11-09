@@ -4,6 +4,8 @@ const http = require('http');
 const sio = require('socket.io');
 const compression = require('compression');
 
+const rooms = {};
+
 const app = express();
 const port = process.env.PORT || 5000;
 const server = http.createServer(app).listen(port);
@@ -16,7 +18,8 @@ if (process.env.NODE_ENV === 'production') {
 	app.get('/', (req, res) => res.json({ status: 'ok' }));
 }
 app.use(compression());
-// Switch off the default 'X-Powered-By: Express' header
+// Reminder https://socket.io/docs/emit-cheatsheet/
+
 app.disable('x-powered-by');
 io.sockets.on('connection', (socket) => {
 	let room = '';
@@ -25,16 +28,29 @@ io.sockets.on('connection', (socket) => {
 	socket.on('message', (message) => socket.broadcast.to(room).emit('message', message));
 
 	// find
-	socket.on('find', ({ roomId }) => {
+	socket.on('find', ({ roomId, user, game }) => {
 		console.log('[server] find', socket.id, roomId);
 		room = roomId;
 		const sr = io.sockets.adapter.rooms[room];
 		if (sr === undefined) {
 			// no room with such name is found so create it
 			socket.join(room);
+			rooms[roomId] = {
+				game,
+				users: [
+					{
+						id: socket.id,
+						user
+					}
+				]
+			};
 			socket.emit('create');
 		} else if (sr.length === 1) {
 			socket.emit('join');
+			rooms[roomId].users.push({
+				id: socket.id,
+				user
+			});
 		} else {
 			// max two clients
 			socket.emit('full', room);
