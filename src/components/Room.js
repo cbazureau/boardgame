@@ -8,6 +8,7 @@ import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import RoomControls from './RoomControl';
 import Game from './Game';
+import STATUS from '../utils/status';
 
 /**
  * Room
@@ -59,7 +60,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			const onRemoteStream = (stream) => {
 				console.log('[Room] onRemoteStream');
 				remoteVideo.current.srcObject = stream;
-				setBridge('established');
+				setBridge(STATUS.ESTABLISHED);
 			};
 			const onLocalStream = (stream) => {
 				console.log('[Room] onLocalStream');
@@ -67,32 +68,32 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			};
 			const onApprove = ({ message, sid }) => {
 				console.log('[Room] onApprove', message, sid);
-				setBridge('approve');
+				setBridge(STATUS.APPROVE);
 				setMessage(message);
 				setSid(sid);
 			};
 			const onJoin = () => {
 				console.log('[Room] onJoin');
-				setBridge('join');
+				setBridge(STATUS.JOIN);
 				setUser('guest');
 			};
 			const onCreate = () => {
 				console.log('[Room] onCreate');
-				setBridge('create');
+				setBridge(STATUS.CREATE);
 				setUser('host');
 			};
 			const onFull = () => {
 				console.log('[Room] onFull');
-				setBridge('full');
+				setBridge(STATUS.FULL);
 			};
 			const onHangUp = () => {
 				console.log('[Room] onHangUp');
-				setBridge('guest-hangup');
+				setBridge(STATUS.GUEST_HANGUP);
 				setUser('guest');
 			};
 
 			const onRemoteHangup = () => {
-				setBridge('host-hangup');
+				setBridge(STATUS.HOST_HANGUP);
 				setUser('host');
 			};
 
@@ -142,14 +143,14 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		};
 		console.log('[Room] send', authInfo);
 		socket.current.emit('auth', authInfo);
-		setBridge('connecting');
+		setBridge(STATUS.CONNECTING);
 	};
 	const handleInvitation = (e) => {
 		e.preventDefault();
 		const status = e.target.dataset.ref;
 		console.log('[Room] handleInvitation', status, currentSid);
 		socket.current.emit([ status ], currentSid);
-		setBridge('connecting');
+		setBridge(STATUS.CONNECTING);
 	};
 	const toggleVideo = () => {
 		console.log('[Room] toggleVideo', !isVideoEnabled);
@@ -173,7 +174,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			</div>
 			{!gameOnly && (
 				<Fragment>
-					<div className={`Room__videos ${bridge}`}>
+					<div className={`Room__videos ${bridge === STATUS.ESTABLISHED ? 'is-established' : ''}`}>
 						<div className="Room__videobox">
 							<video className="Room__video is-remote" ref={remoteVideo} autoPlay />
 						</div>

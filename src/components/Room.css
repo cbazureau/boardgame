@@ -30,6 +30,6 @@
 .Room__video.is-local {
   filter: grayscale(0.8);
 }
-.Room__videos:not(.established) .Room__video.is-remote {
+.Room__videos:not(.is-established) .Room__video.is-remote {
   display: none;
 }

@@ -20,8 +20,11 @@ app.use(compression());
 app.disable('x-powered-by');
 io.sockets.on('connection', (socket) => {
 	let room = '';
-	// sending to all clients in the room (channel) except sender
+
+	// message
 	socket.on('message', (message) => socket.broadcast.to(room).emit('message', message));
+
+	// find
 	socket.on('find', ({ roomId }) => {
 		console.log('[server] find', socket.id, roomId);
 		room = roomId;
@@ -37,22 +40,27 @@ io.sockets.on('connection', (socket) => {
 			socket.emit('full', room);
 		}
 	});
+
+	// auth
 	socket.on('auth', (data) => {
 		console.log('[server] auth', socket.id);
 		data.sid = socket.id;
-		// sending to all clients in the room (channel) except sender
 		socket.broadcast.to(room).emit('approve', data);
 	});
+
+	// accept
 	socket.on('accept', (id) => {
 		console.log('[server] accept', socket.id);
 		io.sockets.connected[id].join(room);
-		// sending to all clients in 'game' room(channel), include sender
 		io.in(room).emit('bridge');
 	});
+
+	// reject
 	socket.on('reject', () => socket.emit('full'));
+
+	// leave
 	socket.on('leave', () => {
 		console.log('[server] leave', socket.id);
-		// sending to all clients in the room (channel) except sender
 		socket.broadcast.to(room).emit('hangup');
 		socket.leave(room);
 	});
