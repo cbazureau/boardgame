@@ -5,7 +5,7 @@ import './Communication.css';
 import STATUS from '../utils/status';
 
 const Communication = ({ send, handleInput, handleInvitation, message, bridge }) =>
-	bridge !== STATUS.ESTABLISHED && bridge !== STATUS.CREATE ? (
+	bridge !== STATUS.ESTABLISHED && bridge !== STATUS.CREATE && bridge !== STATUS.HOST_HANGUP ? (
 		<div className="Communication">
 			{(bridge === STATUS.GUEST_HANGUP || bridge === STATUS.JOIN) && (
 				<div className="Communication__box">
@@ -45,16 +45,6 @@ const Communication = ({ send, handleInput, handleInvitation, message, bridge })
 					<Link className="primary-button" to="/">
 						OK
 					</Link>
-				</div>
-			)}
-			{(bridge === STATUS.HOST_HANGUP || bridge === STATUS.CREATE) && (
-				<div className="Communication__box">
-					<p>
-						<span>Waiting for someone to join this room:&nbsp;</span>
-						<a href={window.location.href}>{window.location.href}</a>
-						<br />
-						{bridge === STATUS.HOST_HANGUP && <span className="remote-left">The remote side hung up.</span>}
-					</p>
 				</div>
 			)}
 		</div>
