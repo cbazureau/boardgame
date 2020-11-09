@@ -171,7 +171,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	return (
 		<div className="Room">
 			<div className="Room__game">
-				<Game game={game} />
+				<Game game={game} updateGame={updateGame} />
 			</div>
 			{!gameOnly && (
 				<Fragment>

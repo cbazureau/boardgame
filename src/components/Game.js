@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import './Game.css';
+import _cloneDeep from 'lodash/cloneDeep';
 import GameObject from './GameObject';
 
 const imageLoader = async (urls) => {
@@ -17,8 +18,10 @@ const imageLoader = async (urls) => {
 	);
 };
 
-const Game = ({ game }) => {
+const Game = ({ game, updateGame }) => {
+	const currentLimit = useRef();
 	const [ imageLoaded, setImageLoaded ] = useState(false);
+	const [ currentObjId, setCurrentObjId ] = useState(false);
 
 	// PreLoadImg
 	useEffect(
@@ -61,10 +64,36 @@ const Game = ({ game }) => {
 		height: `${game.size.height}px`
 	};
 
+	const getCursorPosition = (div, event) => {
+		const rect = div.getBoundingClientRect();
+		const left = event.clientX - rect.left;
+		const top = event.clientY - rect.top;
+		return { top, left };
+	};
+
+	const onClick = (e) => {
+		if (currentObjId) {
+			const pos = getCursorPosition(currentLimit.current, e);
+			console.log(currentObjId, pos);
+			const newGame = _cloneDeep(game);
+			const index = newGame.objects.findIndex((o) => o.id === currentObjId);
+			newGame.objects[index].pos = pos;
+			updateGame({ game: newGame });
+		}
+	};
+
 	return (
 		<div className="Game">
-			<div className="Game__limits" style={gameLimits}>
-				{objects.map((o) => <GameObject key={o.obj.id} def={o.def} obj={o.obj} />)}
+			<div className="Game__limits" style={gameLimits} ref={currentLimit} onClick={onClick}>
+				{objects.map((o) => (
+					<GameObject
+						key={o.obj.id}
+						def={o.def}
+						obj={o.obj}
+						onSelect={setCurrentObjId}
+						isSelected={currentObjId === o.obj.id}
+					/>
+				))}
 			</div>
 		</div>
 	);
