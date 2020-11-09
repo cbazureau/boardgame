@@ -5,7 +5,7 @@ import './Communication.css';
 import STATUS from '../utils/status';
 
 const Communication = ({ send, handleInput, handleInvitation, message, bridge }) =>
-	bridge !== STATUS.ESTABLISHED ? (
+	bridge !== STATUS.ESTABLISHED && bridge !== STATUS.CREATE ? (
 		<div className="Communication">
 			{(bridge === STATUS.GUEST_HANGUP || bridge === STATUS.JOIN) && (
 				<div className="Communication__box">

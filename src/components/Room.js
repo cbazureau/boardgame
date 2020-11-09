@@ -39,6 +39,19 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	const currentMedia = useRef();
 	const roomId = match.params.room;
 
+	const send = (e) => {
+		if (e) e.preventDefault();
+		const authInfo = {
+			sid: currentSid,
+			message: currentMessage,
+			audio: isAudioEnabled,
+			video: isVideoEnabled
+		};
+		console.log('[Room] send', authInfo);
+		socket.current.emit('auth', authInfo);
+		setBridge(STATUS.CONNECTING);
+	};
+
 	useBeforeUnload(() => {
 		if (currentMedia.current) {
 			console.log('[Room] useBeforeUnload handleHangup');
@@ -68,9 +81,14 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			};
 			const onApprove = ({ message, sid }) => {
 				console.log('[Room] onApprove', message, sid);
-				setBridge(STATUS.APPROVE);
 				setMessage(message);
 				setSid(sid);
+				// Manuel accept
+				// setBridge(STATUS.APPROVE);
+
+				// Auto accept
+				socket.current.emit('accept', sid);
+				setBridge(STATUS.CONNECTING);
 			};
 			const onJoin = () => {
 				console.log('[Room] onJoin');
@@ -132,18 +150,6 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		const msg = e.target.value;
 		console.log('[Room] handleInput', msg);
 		setMessage(msg);
-	};
-	const send = (e) => {
-		e.preventDefault();
-		const authInfo = {
-			sid: currentSid,
-			message: currentMessage,
-			audio: isAudioEnabled,
-			video: isVideoEnabled
-		};
-		console.log('[Room] send', authInfo);
-		socket.current.emit('auth', authInfo);
-		setBridge(STATUS.CONNECTING);
 	};
 	const handleInvitation = (e) => {
 		e.preventDefault();
