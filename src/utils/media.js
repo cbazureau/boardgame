@@ -1,11 +1,32 @@
+const CONSTRAINTS = {
+	// audio: true,
+	// video: true
+	audio: {
+		sampleSize: 16,
+		channelCount: 2,
+		echoCancellation: true,
+		noiseSuppression: true
+	},
+	video: {
+		width: 320,
+		height: 240,
+		frameRate: 10,
+		facingMode: 'user'
+	}
+};
+
+window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+
 let pc = null;
 let dc = null;
 let remoteStream = null;
 let localStream = null;
 
-const media = ({ socket, onRemoteStream, getUserMedia, isVideoEnabled, isAudioEnabled, onHangUp, onLocalStream }) => {
+const media = ({ socket, onRemoteStream, isVideoEnabled, isAudioEnabled, onHangUp, onLocalStream }) => {
 	let user = null;
-	window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+	const getUserMedia = navigator.mediaDevices
+		.getUserMedia(CONSTRAINTS)
+		.catch((e) => console.error('getUserMedia() error: ' + e.name));
 	const setDescription = (offer) => pc.setLocalDescription(offer);
 	const sendDescription = () => socket.send(pc.localDescription);
 	const setupDataHandlers = () => {
