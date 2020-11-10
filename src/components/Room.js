@@ -168,10 +168,14 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		currentMedia.current.hangup();
 	};
 
+	const updateSocketGame = ({ game }) => {
+		socket.current.emit('play', { game });
+	};
+
 	return (
 		<div className="Room">
 			<div className="Room__game">
-				<Game game={game} updateGame={updateGame} />
+				<Game game={game} updateGame={updateSocketGame} />
 			</div>
 			{!gameOnly && (
 				<Fragment>
@@ -211,7 +215,7 @@ const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } 
 	isAudioEnabled
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	updateGame: ({ game }) => store.dispatch({ type: 'UPDATE_GAME', game }),
+	updateGame: ({ game }) => !console.log('UPDATE_GAME', game) && store.dispatch({ type: 'UPDATE_GAME', game }),
 	addRoom: (roomId) => store.dispatch({ type: 'ADD_ROOM', room: roomId }),
 	setVideo: (enabled) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),
 	setAudio: (enabled) => store.dispatch({ type: 'SET_AUDIO', isAudioEnabled: enabled })

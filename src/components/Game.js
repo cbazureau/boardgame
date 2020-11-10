@@ -77,8 +77,10 @@ const Game = ({ game, updateGame }) => {
 			console.log(currentObjId, pos);
 			const newGame = _cloneDeep(game);
 			const index = newGame.objects.findIndex((o) => o.id === currentObjId);
-			newGame.objects[index].pos = pos;
-			updateGame({ game: newGame });
+			if (index) {
+				newGame.objects[index].pos = pos;
+				updateGame({ game: newGame });
+			}
 		}
 	};
 
