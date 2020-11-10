@@ -6,8 +6,8 @@ const GameObject = ({ def, obj, isSelected, onSelect }) => {
 	const styles = {
 		backgroundColor: isSelected ? 'red' : isHovered ? 'green' : 'transparent',
 		position: 'absolute',
-		top: `${obj.pos.top}px`,
-		left: `${obj.pos.left}px`,
+		top: `${obj.pos.top - def.size.height / 2}px`,
+		left: `${obj.pos.left - def.size.width / 2}px`,
 		width: `${def.size.width}px`,
 		height: `${def.size.height}px`,
 		background: `url("${def.sprite ? def.sprite.src : def.src}") 0 0 no-repeat`,

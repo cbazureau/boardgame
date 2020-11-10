@@ -215,7 +215,7 @@ const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } 
 	isAudioEnabled
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	updateGame: ({ game }) => !console.log('UPDATE_GAME', game) && store.dispatch({ type: 'UPDATE_GAME', game }),
+	updateGame: ({ game }) => store.dispatch({ type: 'UPDATE_GAME', game }),
 	addRoom: (roomId) => store.dispatch({ type: 'ADD_ROOM', room: roomId }),
 	setVideo: (enabled) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),
 	setAudio: (enabled) => store.dispatch({ type: 'SET_AUDIO', isAudioEnabled: enabled })

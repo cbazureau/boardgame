@@ -74,7 +74,7 @@ const Game = ({ game, updateGame }) => {
 	const onClick = (e) => {
 		if (currentObjId) {
 			const pos = getCursorPosition(currentLimit.current, e);
-			console.log(currentObjId, pos);
+			// console.log(currentObjId, pos);
 			const newGame = _cloneDeep(game);
 			const index = newGame.objects.findIndex((o) => o.id === currentObjId);
 			if (index) {

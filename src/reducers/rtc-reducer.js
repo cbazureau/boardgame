@@ -10,6 +10,7 @@ const initalState = {
 const rtcReducer = (state = initalState, action) => {
 	switch (action.type) {
 		case 'UPDATE_GAME':
+			console.log('[reducer] UPDATE_GAME');
 			return { ...state, game: action.game };
 		case 'ADD_ROOM':
 			if (state.rooms.includes(action.room)) return state;
