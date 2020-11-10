@@ -36,7 +36,7 @@ io.sockets.on('connection', (socket) => {
 			// no room with such name is found so create it
 			socket.join(room);
 			rooms[roomId] = {
-				game,
+				game: rooms && rooms[room] && rooms[room].game ? rooms[room].game : game,
 				users: [
 					{
 						id: socket.id,
@@ -55,7 +55,7 @@ io.sockets.on('connection', (socket) => {
 			// max two clients
 			socket.emit('full', room);
 		}
-		io.to('room').emit('update', { game: rooms[room].game });
+		io.to(room).emit('update', { game: rooms[room].game });
 	});
 
 	// auth
@@ -67,9 +67,9 @@ io.sockets.on('connection', (socket) => {
 
 	// play
 	socket.on('play', ({ game }) => {
-		console.log('[server] play', socket.id, game);
+		console.log('[server] play', socket.id, game.objects);
 		rooms[room].game = game;
-		io.to('room').emit('update', { game: rooms[room].game });
+		io.to(room).emit('update', { game: rooms[room].game });
 	});
 
 	// accept

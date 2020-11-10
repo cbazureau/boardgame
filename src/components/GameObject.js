@@ -20,7 +20,7 @@ const GameObject = ({ def, obj, isSelected, onSelect }) => {
 			style={styles}
 			onMouseEnter={() => setHovered(true)}
 			onMouseLeave={() => setHovered(false)}
-			onClick={() => onSelect(isSelected ? undefined : obj.id)}
+			onClick={() => onSelect(isSelected || !def.canMove ? undefined : obj.id)}
 		/>
 	);
 };
