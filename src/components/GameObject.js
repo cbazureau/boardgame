@@ -12,7 +12,8 @@ const GameObject = ({ def, obj, isSelected, onSelect }) => {
 		height: `${def.size.height}px`,
 		background: `url("${def.sprite ? def.sprite.src : def.src}") 0 0 no-repeat`,
 		backgroundPosition: def.sprite ? `-${def.inSpritePosition.left}px -${def.inSpritePosition.top}px` : undefined,
-		backgroundSize: def.sprite ? `${Math.round(def.sprite.size.width / def.size.width * 100)}%` : '100%'
+		backgroundSize: def.sprite ? `${Math.round(def.sprite.size.width / def.size.width * 100)}%` : '100%',
+		transition: 'all 0.3s ease-in-out'
 	};
 	return (
 		<div
