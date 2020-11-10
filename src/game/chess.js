@@ -1,7 +1,7 @@
 const game = {
 	name: 'Chess',
 	size: {
-		width: 500,
+		width: 700,
 		height: 500
 	},
 	playerRequired: {

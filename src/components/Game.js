@@ -21,7 +21,7 @@ const imageLoader = async (urls) => {
 const Game = ({ game, updateGame }) => {
 	const currentLimit = useRef();
 	const [ imageLoaded, setImageLoaded ] = useState(false);
-	const [ currentObjId, setCurrentObjId ] = useState(false);
+	const [ currentObjId, setCurrentObjId ] = useState(undefined);
 
 	// PreLoadImg
 	useEffect(
@@ -80,6 +80,7 @@ const Game = ({ game, updateGame }) => {
 			if (index) {
 				newGame.objects[index].pos = pos;
 				updateGame({ game: newGame });
+				setCurrentObjId(undefined);
 			}
 		}
 	};

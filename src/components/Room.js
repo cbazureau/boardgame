@@ -10,6 +10,23 @@ import RoomControls from './RoomControl';
 import Game from './Game';
 import STATUS from '../utils/status';
 
+const CONSTRAINTS = {
+	// audio: true,
+	// video: true
+	audio: {
+		sampleSize: 16,
+		channelCount: 2,
+		echoCancellation: true,
+		noiseSuppression: true
+	},
+	video: {
+		width: 320,
+		height: 240,
+		frameRate: 10,
+		facingMode: 'user'
+	}
+};
+
 /**
  * Room
  * Create or access to a room
@@ -29,12 +46,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	const socket = useRef(io.connect(`${protocol}://${socketDomain}`));
 	const getUserMedia = useRef(
 		!gameOnly &&
-			navigator.mediaDevices
-				.getUserMedia({
-					audio: true,
-					video: true
-				})
-				.catch((e) => alert('getUserMedia() error: ' + e.name))
+			navigator.mediaDevices.getUserMedia(CONSTRAINTS).catch((e) => alert('getUserMedia() error: ' + e.name))
 	);
 	const currentMedia = useRef();
 	const roomId = match.params.room;

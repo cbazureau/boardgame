@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import './Game.css';
+import './GameObject.css';
 
 const GameObject = ({ def, obj, isSelected, onSelect }) => {
 	const [ isHovered, setHovered ] = useState(false);
 	const styles = {
-		backgroundColor: isSelected ? 'red' : isHovered ? 'green' : 'transparent',
-		position: 'absolute',
+		backgroundColor: isSelected ? 'red' : 'transparent',
+		cursor: def.canMove ? 'grab' : 'auto',
 		top: `${obj.pos.top - def.size.height / 2}px`,
 		left: `${obj.pos.left - def.size.width / 2}px`,
 		width: `${def.size.width}px`,
