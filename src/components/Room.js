@@ -75,16 +75,19 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				setMessage(message);
 				setSid(sid);
 				// Manuel accept
-				setStatus(STATUS.APPROVE);
+				//setStatus(STATUS.APPROVE);
 
 				// Auto accept
-				// socket.current.emit('accept', sid);
-				// setStatus(STATUS.CONNECTING);
+				socket.current.emit('accept', sid);
+				setStatus(STATUS.CONNECTING);
 			};
 			const onJoin = () => {
 				console.log('[Room] onJoin');
 				setStatus(STATUS.JOIN);
 				setUser('guest');
+
+				// Auto request to join
+				send();
 			};
 			const onCreate = () => {
 				console.log('[Room] onCreate');
