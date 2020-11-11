@@ -30,7 +30,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 
 	const onHangUp = () => {
 		console.log('[Room] onHangUp');
-		setStatus(STATUS.GUEST_HANGUP);
+		setStatus(STATUS.CREATE);
 		setUser('guest');
 	};
 
@@ -95,7 +95,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			};
 
 			const onRemoteHangup = () => {
-				setStatus(STATUS.HOST_HANGUP);
+				setStatus(STATUS.CREATE);
 				setUser('host');
 			};
 
