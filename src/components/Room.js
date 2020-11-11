@@ -119,16 +119,10 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		[ addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly, game, updateGame ]
 	);
 
-	const handleInput = (e) => {
-		const msg = e.target.value;
-		console.log('[Room] handleInput', msg);
-		setMessage(msg);
-	};
-	const send = (e) => {
-		if (e) e.preventDefault();
+	const send = () => {
 		const authInfo = {
 			sid: currentSid,
-			message: currentMessage,
+			message: 'Please invite me !',
 			audio: isAudioEnabled,
 			video: isVideoEnabled
 		};
@@ -189,7 +183,6 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 						bridge={bridge}
 						message={currentMessage}
 						send={send}
-						handleInput={handleInput}
 						handleInvitation={handleInvitation}
 					/>
 				</Fragment>

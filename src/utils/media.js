@@ -135,10 +135,6 @@ const media = ({ socket, onRemoteStream, isVideoEnabled, isAudioEnabled, onHangU
 		onHangUp();
 	};
 	return {
-		setDescription,
-		sendDescription,
-		setupDataHandlers,
-		init,
 		createCommunication,
 		toggleVideo,
 		toggleAudio,

@@ -4,27 +4,18 @@ import { Link } from 'react-router-dom';
 import './Communication.css';
 import STATUS from '../utils/status';
 
-const Communication = ({ send, handleInput, handleInvitation, message, bridge }) =>
+const Communication = ({ send, handleInvitation, message, bridge }) =>
 	bridge !== STATUS.ESTABLISHED && bridge !== STATUS.CREATE && bridge !== STATUS.HOST_HANGUP ? (
 		<div className="Communication">
 			{(bridge === STATUS.GUEST_HANGUP || bridge === STATUS.JOIN) && (
 				<div className="Communication__box">
 					<p>
-						<span className="you-left">You hung up.&nbsp;</span>Send an invitation to join the room.
+						{bridge === STATUS.GUEST_HANGUP && <span className="you-left">You hung up.&nbsp;</span>}
+						Send an invitation to join the room.
 					</p>
-					<form onSubmit={send}>
-						<input
-							type="text"
-							className="Communication__input"
-							autoFocus
-							onChange={handleInput}
-							data-ref="message"
-							maxLength="30"
-							required
-							placeholder="Hi, I'm John Doe."
-						/>
-						<button className="primary-button">Send</button>
-					</form>
+					<button onClick={send} className="primary-button">
+						Send
+					</button>
 				</div>
 			)}
 			{bridge === STATUS.APPROVE && (
