@@ -3,7 +3,7 @@ import Communication from './Communication';
 import { connect } from 'react-redux';
 import store from '../store';
 import io from 'socket.io-client';
-import media from '../utils/media';
+import media, { toggleAudio, toggleVideo } from '../utils/media';
 import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import RoomControls from './RoomControl';
@@ -137,14 +137,14 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		socket.current.emit([ status ], currentSid);
 		setBridge(STATUS.CONNECTING);
 	};
-	const toggleVideo = () => {
+	const onToggleVideo = () => {
 		console.log('[Room] toggleVideo', !isVideoEnabled);
-		currentMedia.current.toggleVideo(!isVideoEnabled);
+		toggleVideo(!isVideoEnabled);
 		setVideo(!isVideoEnabled);
 	};
-	const toggleAudio = () => {
+	const onToggleAudio = () => {
 		console.log('[Room] toggleAudio', !isAudioEnabled);
-		currentMedia.current.toggleAudio(!isAudioEnabled);
+		toggleAudio(!isAudioEnabled);
 		setAudio(!isAudioEnabled);
 	};
 	const handleHangup = () => {
@@ -173,8 +173,8 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 								bridge={bridge}
 								audio={isAudioEnabled}
 								video={isVideoEnabled}
-								toggleVideo={toggleVideo}
-								toggleAudio={toggleAudio}
+								toggleVideo={onToggleVideo}
+								toggleAudio={onToggleAudio}
 								handleHangup={handleHangup}
 							/>
 						</div>

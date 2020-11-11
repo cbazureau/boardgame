@@ -122,13 +122,6 @@ const media = ({ socket, onRemoteStream, isVideoEnabled, isAudioEnabled, onHangU
 		});
 	};
 
-	const toggleAudio = (enabled) => {
-		localStream.getAudioTracks()[0].enabled = enabled;
-	};
-	const toggleVideo = (enabled) => {
-		localStream.getVideoTracks()[0].enabled = enabled;
-	};
-
 	const hangup = () => {
 		if (pc) pc.close();
 		socket.emit('leave');
@@ -136,11 +129,25 @@ const media = ({ socket, onRemoteStream, isVideoEnabled, isAudioEnabled, onHangU
 	};
 	return {
 		createCommunication,
-		toggleVideo,
-		toggleAudio,
 		hangup,
 		setUser
 	};
+};
+
+/**
+ * toggleAudio
+ * @param {*} enabled
+ */
+export const toggleAudio = (enabled) => {
+	localStream.getAudioTracks()[0].enabled = enabled;
+};
+
+/**
+ * toggleVideo
+ * @param {*} enabled
+ */
+export const toggleVideo = (enabled) => {
+	localStream.getVideoTracks()[0].enabled = enabled;
 };
 
 export default media;
