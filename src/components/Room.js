@@ -18,7 +18,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	const socketDomain = window.location.host === 'localhost:3000' ? 'localhost:5000' : window.location.host;
 	const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
 
-	const [ status, setStatus ] = useState('');
+	const [ status, setStatus ] = useState(STATUS.IN_LOBBY);
 	const [ user, setUser ] = useState('');
 	const [ currentMessage, setMessage ] = useState('');
 	const [ currentSid, setSid ] = useState('');
@@ -31,13 +31,15 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	const onHangUp = () => {
 		console.log('[Room] onHangUp');
 		setStatus(STATUS.CREATE);
+		hangup();
+		socket.current.emit('leave');
 		setUser('guest');
 	};
 
 	useBeforeUnload(() => {
 		if (isMediaActive) {
 			console.log('[Room] useBeforeUnload handleHangup');
-			hangup({ onHangUp });
+			onHangUp();
 		}
 	});
 
@@ -126,6 +128,9 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		[ isMediaActive, isAudioEnabled, isVideoEnabled, user, roomId, game, updateGame ]
 	);
 
+	/**
+   * send
+   */
 	const send = () => {
 		const authInfo = {
 			sid: currentSid,
@@ -137,6 +142,11 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		socket.current.emit('auth', authInfo);
 		setStatus(STATUS.CONNECTING);
 	};
+
+	/**
+   * handleInvitation
+   * @param {*} response (accept/reject)
+   */
 	const handleInvitation = (response) => () => {
 		console.log('[Room] handleInvitation', response, currentSid);
 		if (response === 'accept') {
@@ -146,21 +156,37 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		}
 		setStatus(STATUS.CONNECTING);
 	};
+
+	/**
+   * onToggleVideo
+   */
 	const onToggleVideo = () => {
 		console.log('[Room] toggleVideo', !isVideoEnabled);
 		toggleVideo(!isVideoEnabled);
 		setVideo(!isVideoEnabled);
 	};
+
+	/**
+   * onToggleAudio
+   */
 	const onToggleAudio = () => {
 		console.log('[Room] toggleAudio', !isAudioEnabled);
 		toggleAudio(!isAudioEnabled);
 		setAudio(!isAudioEnabled);
 	};
+
+	/**
+   * handleHangup
+   */
 	const handleHangup = () => {
 		console.log('[Room] handleHangup');
-		hangup({ onHangUp });
+		onHangUp();
 	};
 
+	/**
+   * updateSocketGame
+   * @param {*} param0
+   */
 	const updateSocketGame = ({ game }) => {
 		socket.current.emit('play', { game });
 	};

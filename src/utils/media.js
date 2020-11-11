@@ -26,8 +26,7 @@ const CONSTRAINTS = {
 window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
 
 export const setUserForMedia = (user) => (currentUser = user);
-const setDescription = (offer) => pc.setLocalDescription(offer);
-const sendDescription = () => currentSocket.send(pc.localDescription);
+
 const setupDataHandlers = () => {
 	dc.onmessage = (e) => console.log('[media.setupDataHandlers] data channel : ' + JSON.parse(e.data));
 	dc.onclose = () => remoteStream.getVideoTracks()[0].stop();
@@ -36,15 +35,8 @@ const setupDataHandlers = () => {
 /**
  * init
  */
-export const init = ({ onRemoteStream, onLocalStream }) => {
+export const init = async ({ onRemoteStream, onLocalStream }) => {
 	console.log('[media.init]');
-	// wait for local media to be ready
-	const attachMediaIfReady = () => {
-		console.log('[media.init] attachMediaIfReady');
-		dc = pc.createDataChannel('chat');
-		setupDataHandlers();
-		pc.createOffer().then(setDescription).then(sendDescription).catch(console.log);
-	};
 	// set up the peer connection
 	// this is one of Google's public STUN servers
 	// make sure your offer/answer role does not change. If user A does a SLD
@@ -65,13 +57,11 @@ export const init = ({ onRemoteStream, onLocalStream }) => {
 	};
 	// when the other side added a media stream, show it on screen
 	pc.onaddstream = (e) => {
-		// console.log("[media] onaddstream", e);
 		remoteStream = e.stream;
 		onRemoteStream(remoteStream);
 	};
+	// data channel
 	pc.ondatachannel = (e) => {
-		// data channel
-		// console.log("[media] ondatachannel", e);
 		dc = e.channel;
 		setupDataHandlers();
 		dc.send(
@@ -86,18 +76,26 @@ export const init = ({ onRemoteStream, onLocalStream }) => {
 	localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
 	// call if we were the last to connect (to increase
 	// chances that everything is set up properly at both ends)
-	if (currentUser === 'host') getUserMedia.then(attachMediaIfReady);
+	if (currentUser === 'host') {
+		await getUserMedia;
+		dc = pc.createDataChannel('chat');
+		const offer = await pc.createOffer();
+		await pc.setLocalDescription(offer);
+		currentSocket.send(pc.localDescription);
+	}
 };
 
 /**
  * onMessage
  */
-const onMessage = (message) => {
+const onMessage = async (message) => {
 	// console.log("[media] onMessage", message);
 	if (message.type === 'offer') {
 		// set remote description and answer
 		pc.setRemoteDescription(new RTCSessionDescription(message));
-		pc.createAnswer().then(setDescription).then(sendDescription).catch(console.log); // An error occurred, so handle the failure to connect
+		const offer = await pc.createAnswer();
+		await pc.setLocalDescription(offer);
+		currentSocket.send(pc.localDescription);
 	} else if (message.type === 'answer') {
 		// set remote description
 		pc.setRemoteDescription(new RTCSessionDescription(message));
@@ -128,7 +126,7 @@ export const createCommunication = async ({
 
 	getUserMedia = navigator.mediaDevices.getUserMedia(CONSTRAINTS);
 	currentSocket.on('message', onMessage);
-	currentSocket.on('bridge', (role) => init({ onRemoteStream, onLocalStream }));
+	currentSocket.on('bridge', () => init({ onRemoteStream, onLocalStream }));
 	localStream = await getUserMedia;
 	localStream.getVideoTracks()[0].enabled = isVideoEnabled;
 	localStream.getAudioTracks()[0].enabled = isAudioEnabled;
@@ -138,10 +136,8 @@ export const createCommunication = async ({
 /**
  * hangup
  */
-export const hangup = ({ onHangUp }) => {
+export const hangup = () => {
 	if (pc) pc.close();
-	currentSocket.emit('leave');
-	onHangUp();
 };
 
 /**
