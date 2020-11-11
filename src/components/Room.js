@@ -3,7 +3,7 @@ import Communication from './Communication';
 import { connect } from 'react-redux';
 import store from '../store';
 import io from 'socket.io-client';
-import { toggleAudio, setUserForMedia, toggleVideo, hangup, createCommunication } from '../utils/media';
+import { toggleAudio, setUserForMedia, toggleVideo, hangup, createLocalStream } from '../utils/media';
 import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import RoomControls from './RoomControl';
@@ -102,8 +102,8 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			};
 
 			const create = async () => {
-				console.log('[Room] createCommunication');
-				await createCommunication({
+				console.log('[Room] createLocalStream');
+				await createLocalStream({
 					socket: socket.current,
 					isVideoEnabled,
 					isAudioEnabled,

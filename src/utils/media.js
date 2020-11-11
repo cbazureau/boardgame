@@ -111,9 +111,9 @@ const onMessage = async (message) => {
 };
 
 /**
- * createCommunication
+ * createLocalStream
  */
-export const createCommunication = async ({
+export const createLocalStream = async ({
 	socket,
 	isVideoEnabled,
 	isAudioEnabled,
