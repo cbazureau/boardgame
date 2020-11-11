@@ -1,6 +1,6 @@
 let pc = null;
 let dc = null;
-let remoteStream = null;
+let remoteStream = [];
 let localStream = null;
 let currentSocket = null;
 let getUserMedia = null;
@@ -29,7 +29,7 @@ export const setUserForMedia = (user) => (currentUser = user);
 
 const setupDataHandlers = () => {
 	dc.onmessage = (e) => console.log('[media.setupDataHandlers] data channel : ' + JSON.parse(e.data));
-	dc.onclose = () => remoteStream.getVideoTracks()[0].stop();
+	dc.onclose = () => remoteStream[0].getVideoTracks()[0].stop();
 };
 
 /**
@@ -57,8 +57,8 @@ export const init = async ({ onRemoteStream, onLocalStream }) => {
 	};
 	// when the other side added a media stream, show it on screen
 	pc.onaddstream = (e) => {
-		remoteStream = e.stream;
-		onRemoteStream(remoteStream);
+		remoteStream[0] = e.stream;
+		onRemoteStream(remoteStream[0]);
 	};
 	// data channel
 	pc.ondatachannel = (e) => {
