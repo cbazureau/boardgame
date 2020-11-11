@@ -77,6 +77,7 @@ io.sockets.on('connection', (socket) => {
 		console.log('[server] accept', socket.id);
 		io.sockets.connected[id].join(room);
 		io.in(room).emit('bridge');
+		io.to(room).emit('update', { game: rooms[room].game });
 	});
 
 	// reject
