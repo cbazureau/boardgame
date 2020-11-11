@@ -29,24 +29,18 @@ export const setUserForMedia = (user) => (currentUser = user);
 const setDescription = (offer) => pc.setLocalDescription(offer);
 const sendDescription = () => currentSocket.send(pc.localDescription);
 const setupDataHandlers = () => {
-	dc.onmessage = (e) =>
-		/*console.log(
-      "[Media] received message over data channel:" + JSON.parse(e.data)
-    );*/
-		(dc.onclose = () => {
-			remoteStream.getVideoTracks()[0].stop();
-			// console.log("[Media] The Data Channel is Closed");
-		});
+	dc.onmessage = (e) => console.log('[media.setupDataHandlers] data channel : ' + JSON.parse(e.data));
+	dc.onclose = () => remoteStream.getVideoTracks()[0].stop();
 };
 
 /**
  * init
  */
 export const init = ({ onRemoteStream, onLocalStream }) => {
-	console.log('[media] init');
+	console.log('[media.init]');
 	// wait for local media to be ready
 	const attachMediaIfReady = () => {
-		// console.log("[media] attachMediaIfReady");
+		console.log('[media.init] attachMediaIfReady');
 		dc = pc.createDataChannel('chat');
 		setupDataHandlers();
 		pc.createOffer().then(setDescription).then(sendDescription).catch(console.log);
