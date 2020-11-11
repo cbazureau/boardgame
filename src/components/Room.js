@@ -1,9 +1,9 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Communication from './Communication';
 import { connect } from 'react-redux';
 import store from '../store';
 import io from 'socket.io-client';
-import media, { toggleAudio, toggleVideo } from '../utils/media';
+import { toggleAudio, setUserForMedia, toggleVideo, hangup, createCommunication } from '../utils/media';
 import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import RoomControls from './RoomControl';
@@ -15,8 +15,6 @@ import STATUS from '../utils/status';
  * Create or access to a room
  */
 const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAudio, game, updateGame }) => {
-	// For debugging
-	const gameOnly = false;
 	const socketDomain = window.location.host === 'localhost:3000' ? 'localhost:5000' : window.location.host;
 	const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
 
@@ -27,20 +25,26 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	const remoteVideo = useRef(null);
 	const localVideo = useRef(null);
 	const socket = useRef(io.connect(`${protocol}://${socketDomain}`));
-	const currentMedia = useRef();
+	const isMediaActive = useRef(false);
 	const roomId = match.params.room;
 
+	const onHangUp = () => {
+		console.log('[Room] onHangUp');
+		setBridge(STATUS.GUEST_HANGUP);
+		setUser('guest');
+	};
+
 	useBeforeUnload(() => {
-		if (currentMedia.current) {
+		if (isMediaActive.current) {
 			console.log('[Room] useBeforeUnload handleHangup');
-			currentMedia.current.hangup();
+			hangup({ onHangUp });
 		}
 	});
 
 	useEffect(
 		() => {
-			if (currentMedia.current) {
-				currentMedia.current.setUser(user);
+			if (isMediaActive.current) {
+				setUserForMedia(user);
 			}
 		},
 		[ user ]
@@ -82,11 +86,6 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				console.log('[Room] onFull');
 				setBridge(STATUS.FULL);
 			};
-			const onHangUp = () => {
-				console.log('[Room] onHangUp');
-				setBridge(STATUS.GUEST_HANGUP);
-				setUser('guest');
-			};
 
 			const onRemoteHangup = () => {
 				setBridge(STATUS.HOST_HANGUP);
@@ -95,18 +94,17 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 
 			addRoom(roomId);
 
-			if (!currentMedia.current && !gameOnly) {
-				console.log('[Room] new media');
-				currentMedia.current = media({
+			if (!isMediaActive.current) {
+				console.log('[Room] createCommunication');
+				createCommunication({
 					socket: socket.current,
-					onRemoteStream,
-					onLocalStream,
 					isVideoEnabled,
 					isAudioEnabled,
-					onHangUp
+					onLocalStream,
+					onRemoteStream,
+					user
 				});
-				console.log('[Room] createCommunication');
-				currentMedia.current.createCommunication();
+				isMediaActive.current = true;
 				socket.current.on('hangup', onRemoteHangup);
 				socket.current.on('create', onCreate);
 				socket.current.on('full', onFull);
@@ -116,7 +114,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				socket.current.emit('find', { roomId, user: 'Bob', game });
 			}
 		},
-		[ addRoom, isAudioEnabled, isVideoEnabled, roomId, user, gameOnly, game, updateGame ]
+		[ addRoom, isAudioEnabled, isVideoEnabled, user, roomId, game, updateGame ]
 	);
 
 	const send = () => {
@@ -149,7 +147,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	};
 	const handleHangup = () => {
 		console.log('[Room] handleHangup');
-		currentMedia.current.hangup();
+		hangup({ onHangUp });
 	};
 
 	const updateSocketGame = ({ game }) => {
@@ -161,32 +159,24 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			<div className="Room__game">
 				<Game game={game} updateGame={updateSocketGame} />
 			</div>
-			{!gameOnly && (
-				<Fragment>
-					<div className={`Room__videos ${bridge === STATUS.ESTABLISHED ? 'is-established' : ''}`}>
-						<div className="Room__videobox">
-							<video className="Room__video is-remote" ref={remoteVideo} autoPlay />
-						</div>
-						<div className="Room__videobox">
-							<video className="Room__video is-local" ref={localVideo} autoPlay muted />
-							<RoomControls
-								bridge={bridge}
-								audio={isAudioEnabled}
-								video={isVideoEnabled}
-								toggleVideo={onToggleVideo}
-								toggleAudio={onToggleAudio}
-								handleHangup={handleHangup}
-							/>
-						</div>
-					</div>
-					<Communication
+
+			<div className={`Room__videos ${bridge === STATUS.ESTABLISHED ? 'is-established' : ''}`}>
+				<div className="Room__videobox">
+					<video className="Room__video is-remote" ref={remoteVideo} autoPlay />
+				</div>
+				<div className="Room__videobox">
+					<video className="Room__video is-local" ref={localVideo} autoPlay muted />
+					<RoomControls
 						bridge={bridge}
-						message={currentMessage}
-						send={send}
-						handleInvitation={handleInvitation}
+						audio={isAudioEnabled}
+						video={isVideoEnabled}
+						toggleVideo={onToggleVideo}
+						toggleAudio={onToggleAudio}
+						handleHangup={handleHangup}
 					/>
-				</Fragment>
-			)}
+				</div>
+			</div>
+			<Communication bridge={bridge} message={currentMessage} send={send} handleInvitation={handleInvitation} />
 		</div>
 	);
 };
