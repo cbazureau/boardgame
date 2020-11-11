@@ -89,46 +89,10 @@ export const init = ({ onRemoteStream, onLocalStream }) => {
 		);
 	};
 	// attach local media to the peer connection
-	localStream.getTracks().forEach((track) => !console.log(track) && pc.addTrack(track, localStream));
+	localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
 	// call if we were the last to connect (to increase
 	// chances that everything is set up properly at both ends)
 	if (currentUser === 'host') getUserMedia.then(attachMediaIfReady);
-};
-
-/**
- * createCommunication
- */
-export const createCommunication = ({
-	socket,
-	isVideoEnabled,
-	isAudioEnabled,
-	onLocalStream,
-	onRemoteStream,
-	user
-}) => {
-	currentSocket = socket;
-	currentUser = user;
-
-	getUserMedia = navigator.mediaDevices
-		.getUserMedia(CONSTRAINTS)
-		.catch((e) => console.error('getUserMedia() error: ' + e.name));
-	currentSocket.on('message', onMessage);
-	currentSocket.on('bridge', (role) => init({ onRemoteStream, onLocalStream }));
-	getUserMedia.then((stream) => {
-		localStream = stream;
-		localStream.getVideoTracks()[0].enabled = isVideoEnabled;
-		localStream.getAudioTracks()[0].enabled = isAudioEnabled;
-		onLocalStream(stream);
-	});
-};
-
-/**
- * hangup
- */
-export const hangup = ({ onHangUp }) => {
-	if (pc) pc.close();
-	currentSocket.emit('leave');
-	onHangUp();
 };
 
 /**
@@ -152,6 +116,38 @@ const onMessage = (message) => {
 			})
 		);
 	}
+};
+
+/**
+ * createCommunication
+ */
+export const createCommunication = async ({
+	socket,
+	isVideoEnabled,
+	isAudioEnabled,
+	onLocalStream,
+	onRemoteStream,
+	user
+}) => {
+	currentSocket = socket;
+	currentUser = user;
+
+	getUserMedia = navigator.mediaDevices.getUserMedia(CONSTRAINTS);
+	currentSocket.on('message', onMessage);
+	currentSocket.on('bridge', (role) => init({ onRemoteStream, onLocalStream }));
+	localStream = await getUserMedia;
+	localStream.getVideoTracks()[0].enabled = isVideoEnabled;
+	localStream.getAudioTracks()[0].enabled = isAudioEnabled;
+	onLocalStream(localStream);
+};
+
+/**
+ * hangup
+ */
+export const hangup = ({ onHangUp }) => {
+	if (pc) pc.close();
+	currentSocket.emit('leave');
+	onHangUp();
 };
 
 /**

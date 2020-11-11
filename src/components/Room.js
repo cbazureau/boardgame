@@ -25,7 +25,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	const remoteVideo = useRef(null);
 	const localVideo = useRef(null);
 	const socket = useRef(io.connect(`${protocol}://${socketDomain}`));
-	const isMediaActive = useRef(false);
+	const [ isMediaActive, setMediaActive ] = useState(false);
 	const roomId = match.params.room;
 
 	const onHangUp = () => {
@@ -35,7 +35,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	};
 
 	useBeforeUnload(() => {
-		if (isMediaActive.current) {
+		if (isMediaActive) {
 			console.log('[Room] useBeforeUnload handleHangup');
 			hangup({ onHangUp });
 		}
@@ -43,11 +43,18 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 
 	useEffect(
 		() => {
-			if (isMediaActive.current) {
+			if (isMediaActive) {
 				setUserForMedia(user);
 			}
 		},
-		[ user ]
+		[ user, isMediaActive ]
+	);
+
+	useEffect(
+		() => {
+			addRoom(roomId);
+		},
+		[ addRoom, roomId ]
 	);
 
 	useEffect(
@@ -92,11 +99,9 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				setUser('host');
 			};
 
-			addRoom(roomId);
-
-			if (!isMediaActive.current) {
+			const create = async () => {
 				console.log('[Room] createCommunication');
-				createCommunication({
+				await createCommunication({
 					socket: socket.current,
 					isVideoEnabled,
 					isAudioEnabled,
@@ -104,7 +109,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 					onRemoteStream,
 					user
 				});
-				isMediaActive.current = true;
+				setMediaActive(true);
 				socket.current.on('hangup', onRemoteHangup);
 				socket.current.on('create', onCreate);
 				socket.current.on('full', onFull);
@@ -112,9 +117,13 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				socket.current.on('approve', onApprove);
 				socket.current.on('update', updateGame);
 				socket.current.emit('find', { roomId, user: 'Bob', game });
+			};
+
+			if (!isMediaActive) {
+				create();
 			}
 		},
-		[ addRoom, isAudioEnabled, isVideoEnabled, user, roomId, game, updateGame ]
+		[ isMediaActive, isAudioEnabled, isVideoEnabled, user, roomId, game, updateGame ]
 	);
 
 	const send = () => {
