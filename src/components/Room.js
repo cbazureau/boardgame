@@ -18,7 +18,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 	const socketDomain = window.location.host === 'localhost:3000' ? 'localhost:5000' : window.location.host;
 	const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
 
-	const [ bridge, setBridge ] = useState('');
+	const [ status, setStatus ] = useState('');
 	const [ user, setUser ] = useState('');
 	const [ currentMessage, setMessage ] = useState('');
 	const [ currentSid, setSid ] = useState('');
@@ -30,7 +30,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 
 	const onHangUp = () => {
 		console.log('[Room] onHangUp');
-		setBridge(STATUS.GUEST_HANGUP);
+		setStatus(STATUS.GUEST_HANGUP);
 		setUser('guest');
 	};
 
@@ -62,7 +62,7 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 			const onRemoteStream = (stream) => {
 				console.log('[Room] onRemoteStream');
 				remoteVideo.current.srcObject = stream;
-				setBridge(STATUS.ESTABLISHED);
+				setStatus(STATUS.ESTABLISHED);
 			};
 			const onLocalStream = (stream) => {
 				console.log('[Room] onLocalStream');
@@ -73,29 +73,29 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				setMessage(message);
 				setSid(sid);
 				// Manuel accept
-				setBridge(STATUS.APPROVE);
+				setStatus(STATUS.APPROVE);
 
 				// Auto accept
 				// socket.current.emit('accept', sid);
-				// setBridge(STATUS.CONNECTING);
+				// setStatus(STATUS.CONNECTING);
 			};
 			const onJoin = () => {
 				console.log('[Room] onJoin');
-				setBridge(STATUS.JOIN);
+				setStatus(STATUS.JOIN);
 				setUser('guest');
 			};
 			const onCreate = () => {
 				console.log('[Room] onCreate');
-				setBridge(STATUS.CREATE);
+				setStatus(STATUS.CREATE);
 				setUser('host');
 			};
 			const onFull = () => {
 				console.log('[Room] onFull');
-				setBridge(STATUS.FULL);
+				setStatus(STATUS.FULL);
 			};
 
 			const onRemoteHangup = () => {
-				setBridge(STATUS.HOST_HANGUP);
+				setStatus(STATUS.HOST_HANGUP);
 				setUser('host');
 			};
 
@@ -135,14 +135,16 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		};
 		console.log('[Room] send', authInfo);
 		socket.current.emit('auth', authInfo);
-		setBridge(STATUS.CONNECTING);
+		setStatus(STATUS.CONNECTING);
 	};
-	const handleInvitation = (e) => {
-		e.preventDefault();
-		const status = e.target.dataset.ref;
-		console.log('[Room] handleInvitation', status, currentSid);
-		socket.current.emit([ status ], currentSid);
-		setBridge(STATUS.CONNECTING);
+	const handleInvitation = (response) => () => {
+		console.log('[Room] handleInvitation', response, currentSid);
+		if (response === 'accept') {
+			socket.current.emit('accept', currentSid);
+		} else {
+			socket.current.emit('reject', currentSid);
+		}
+		setStatus(STATUS.CONNECTING);
 	};
 	const onToggleVideo = () => {
 		console.log('[Room] toggleVideo', !isVideoEnabled);
@@ -163,29 +165,31 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		socket.current.emit('play', { game });
 	};
 
+	console.log('[Room] status', status);
+
 	return (
 		<div className="Room">
 			<div className="Room__game">
 				<Game game={game} updateGame={updateSocketGame} />
 			</div>
 
-			<div className={`Room__videos ${bridge === STATUS.ESTABLISHED ? 'is-established' : ''}`}>
+			<div className={`Room__videos ${status === STATUS.ESTABLISHED ? 'is-established' : ''}`}>
 				<div className="Room__videobox">
 					<video className="Room__video is-remote" ref={remoteVideo} autoPlay />
 				</div>
 				<div className="Room__videobox">
 					<video className="Room__video is-local" ref={localVideo} autoPlay muted />
 					<RoomControls
-						bridge={bridge}
-						audio={isAudioEnabled}
-						video={isVideoEnabled}
+						status={status}
+						isAudioEnabled={isAudioEnabled}
+						isVideoEnabled={isVideoEnabled}
 						toggleVideo={onToggleVideo}
 						toggleAudio={onToggleAudio}
 						handleHangup={handleHangup}
 					/>
 				</div>
 			</div>
-			<Communication bridge={bridge} message={currentMessage} send={send} handleInvitation={handleInvitation} />
+			<Communication status={status} message={currentMessage} send={send} handleInvitation={handleInvitation} />
 		</div>
 	);
 };
