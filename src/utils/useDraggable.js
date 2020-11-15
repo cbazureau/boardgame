@@ -17,11 +17,20 @@ const eventsFor = {
  * handleDrag
  * @param {*} onDragPosition
  */
-const handleDragStart = (target, setIsDragging) => (e) => {
+const handleDragStartStop = (target, isDragging, setIsDragging, onPositionChange) => (e) => {
 	e = e || window.event;
-	if (e.target !== target) return;
 	e.preventDefault();
-	setIsDragging(true);
+	setIsDragging(!isDragging);
+	if (!isDragging) return;
+	// set the element's new position:
+	const pos = {
+		top: e.clientY,
+		left: e.clientX
+	};
+	onPositionChange({
+		top: pos.top - target.parentNode.offsetTop,
+		left: pos.left - target.parentNode.offsetLeft
+	});
 };
 
 /**
@@ -39,28 +48,6 @@ const handleDrag = (onDragPosition, target, isDragging) => (e) => {
 
 	// set the element's new position:
 	onDragPosition({
-		top: pos.top - target.parentNode.offsetTop,
-		left: pos.left - target.parentNode.offsetLeft
-	});
-};
-
-/**
- * handleDragStop
- * @param {*} onPositionChange
- */
-const handleDragStop = (onPositionChange, target, isDragging, setIsDragging) => (e) => {
-	e = e || window.event;
-	if (!isDragging) return;
-	e.preventDefault();
-
-	const pos = {
-		top: e.clientY,
-		left: e.clientX
-	};
-	setIsDragging(false);
-
-	// set the element's new position:
-	onPositionChange({
 		top: pos.top - target.parentNode.offsetTop,
 		left: pos.left - target.parentNode.offsetLeft
 	});
@@ -90,23 +77,15 @@ const useDraggable = ({ target, currentPosition, onPositionChange }) => {
 		() => {
 			if (!target) return;
 			const { ownerDocument } = target;
-			const dragStartHandler = handleDragStart(target, setIsDragging);
+			const dragStartStopHandler = handleDragStartStop(target, isDragging, setIsDragging, onPositionChange);
 			const dragHandler = handleDrag(onDragPosition, target, isDragging);
-			const dragStopHandler = handleDragStop(onPositionChange, target, isDragging, setIsDragging);
-			ownerDocument.addEventListener(eventsFor.mouse.start, dragStartHandler);
-			ownerDocument.addEventListener(eventsFor.touch.start, dragStartHandler);
+			target.addEventListener('click', dragStartStopHandler);
 			ownerDocument.addEventListener(eventsFor.mouse.move, dragHandler);
 			ownerDocument.addEventListener(eventsFor.touch.move, dragHandler);
-			ownerDocument.addEventListener(eventsFor.mouse.stop, dragStopHandler);
-			ownerDocument.addEventListener(eventsFor.touch.stop, dragStopHandler);
-			// target.addEventListener(eventsFor.touch.start, onTouchStart, { passive: false });
 			return () => {
-				ownerDocument.removeEventListener(eventsFor.mouse.start, dragStartHandler);
-				ownerDocument.removeEventListener(eventsFor.touch.start, dragStartHandler);
+				target.removeEventListener('click', dragStartStopHandler);
 				ownerDocument.removeEventListener(eventsFor.mouse.move, dragHandler);
 				ownerDocument.removeEventListener(eventsFor.touch.move, dragHandler);
-				ownerDocument.removeEventListener(eventsFor.mouse.stop, dragStopHandler);
-				ownerDocument.removeEventListener(eventsFor.touch.stop, dragStopHandler);
 			};
 		},
 		[ onDragPosition, onPositionChange, target, isDragging ]
