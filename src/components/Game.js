@@ -21,7 +21,6 @@ const imageLoader = async (urls) => {
 const Game = ({ game, updateGame }) => {
 	const currentLimit = useRef();
 	const [ imageLoaded, setImageLoaded ] = useState(false);
-	const [ currentObjId, setCurrentObjId ] = useState(undefined);
 
 	// PreLoadImg
 	useEffect(
@@ -64,39 +63,22 @@ const Game = ({ game, updateGame }) => {
 		height: `${game.size.height}px`
 	};
 
-	const getCursorPosition = (div, event) => {
-		const rect = div.getBoundingClientRect();
-		const left = event.clientX - rect.left;
-		const top = event.clientY - rect.top;
-		return { top, left };
-	};
-
-	const onClick = (e) => {
+	const onChange = (currentObjId, pos) => {
+		console.log(currentObjId, pos);
 		if (currentObjId) {
-			const pos = getCursorPosition(currentLimit.current, e);
-			// console.log(currentObjId, pos);
 			const newGame = _cloneDeep(game);
 			const index = newGame.objects.findIndex((o) => o.id === currentObjId);
 			if (index) {
 				newGame.objects[index].pos = pos;
 				updateGame({ game: newGame });
-				setCurrentObjId(undefined);
 			}
 		}
 	};
 
 	return (
 		<div className="Game">
-			<div className="Game__limits" style={gameLimits} ref={currentLimit} onClick={onClick}>
-				{objects.map((o) => (
-					<GameObject
-						key={o.obj.id}
-						def={o.def}
-						obj={o.obj}
-						onSelect={setCurrentObjId}
-						isSelected={currentObjId === o.obj.id}
-					/>
-				))}
+			<div className="Game__limits" style={gameLimits} ref={currentLimit}>
+				{objects.map((o) => <GameObject key={o.obj.id} def={o.def} obj={o.obj} onChange={onChange} />)}
 			</div>
 		</div>
 	);

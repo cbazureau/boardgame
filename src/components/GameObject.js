@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
+import useDraggable from '../utils/useDraggable';
+
 import './GameObject.css';
 
-const GameObject = ({ def, obj, isSelected, onSelect }) => {
-	const [ isHovered, setHovered ] = useState(false);
+const GameObject = ({ def, obj, onChange }) => {
+	const objRef = useRef();
+	const position = useDraggable({
+		target: objRef.current,
+		currentPosition: obj.pos,
+		onPositionChange: (pos) => onChange(obj.id, pos)
+	});
+	const top = position.top - def.size.height / 2;
+	const left = position.left - def.size.width / 2;
 	const styles = {
-		backgroundColor: isSelected ? 'red' : 'transparent',
 		cursor: def.canMove ? 'grab' : 'auto',
-		top: `${obj.pos.top - def.size.height / 2}px`,
-		left: `${obj.pos.left - def.size.width / 2}px`,
+		top: `${top}px`,
+		left: `${left}px`,
 		width: `${def.size.width}px`,
 		height: `${def.size.height}px`,
 		background: `url("${def.sprite ? def.sprite.src : def.src}") 0 0 no-repeat`,
@@ -15,15 +23,7 @@ const GameObject = ({ def, obj, isSelected, onSelect }) => {
 		backgroundSize: def.sprite ? `${Math.round(def.sprite.size.width / def.size.width * 100)}%` : '100%',
 		transition: 'all 0.3s ease-in-out'
 	};
-	return (
-		<div
-			className="GameObject"
-			style={styles}
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
-			onClick={() => onSelect(isSelected || !def.canMove ? undefined : obj.id)}
-		/>
-	);
+	return <div ref={objRef} className="GameObject" style={styles} />;
 };
 
 export default GameObject;
