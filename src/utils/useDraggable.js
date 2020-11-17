@@ -91,7 +91,7 @@ const useDraggable = ({ target, currentPosition, onPositionChange }) => {
 		[ onDragPosition, onPositionChange, target, isDragging ]
 	);
 
-	return dragPosition;
+	return { dragPosition, isDragging };
 };
 
 export default useDraggable;

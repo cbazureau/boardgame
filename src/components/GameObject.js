@@ -5,15 +5,16 @@ import './GameObject.css';
 
 const GameObject = ({ def, obj, onChange }) => {
 	const objRef = useRef();
-	const position = useDraggable({
+	const { dragPosition, isDragging } = useDraggable({
 		target: def.canMove ? objRef.current : undefined,
 		currentPosition: obj.pos,
 		onPositionChange: (pos) => onChange(obj.id, pos)
 	});
-	const top = position.top - def.size.height / 2;
-	const left = position.left - def.size.width / 2;
+	const top = dragPosition.top - def.size.height / 2;
+	const left = dragPosition.left - def.size.width / 2;
 	const styles = {
-		cursor: def.canMove ? 'grab' : 'auto',
+		backgroundColor: isDragging ? 'red' : 'transparent',
+		cursor: def.canMove ? (isDragging ? 'grab' : 'pointer') : 'auto',
 		top: `${top}px`,
 		left: `${left}px`,
 		width: `${def.size.width}px`,
