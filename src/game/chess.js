@@ -4,6 +4,18 @@ const game = {
 		width: 700,
 		height: 500
 	},
+	magneticGrid: [
+		{
+			type: 'auto',
+			forAvailableObjectsType: [ 'pawn' ],
+			top: 75,
+			left: 75,
+			nbX: 8,
+			nbY: 8,
+			intervalX: 50,
+			intervalY: 50
+		}
+	],
 	playerRequired: {
 		min: 2,
 		max: 2

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState, useRef } from 'react';
 import './Game.css';
 import _cloneDeep from 'lodash/cloneDeep';
 import GameObject from './GameObject';
+import { magneticPos } from '../utils/game';
 
 const imageLoader = async (urls) => {
 	return await Promise.all(
@@ -43,7 +44,7 @@ const Game = ({ game, updateGame }) => {
 	const objects = useMemo(
 		() => {
 			if (!imageLoaded) return [];
-			return game.objects.map((obj) => {
+			return game.objects.map((obj, index) => {
 				let sprite = undefined;
 				const def = game.availableObjects.find((o) => o.id === obj.type);
 				if (def.spriteId) {
@@ -51,7 +52,8 @@ const Game = ({ game, updateGame }) => {
 				}
 				return {
 					def: { ...def, sprite },
-					obj
+					obj,
+					index
 				};
 			});
 		},
@@ -64,13 +66,14 @@ const Game = ({ game, updateGame }) => {
 	};
 
 	const onChange = (currentObjId, pos) => {
-		console.log(currentObjId, pos);
 		if (currentObjId) {
 			const newGame = _cloneDeep(game);
-			const index = newGame.objects.findIndex((o) => o.id === currentObjId);
-			if (index) {
-				newGame.objects[index].pos = pos;
-				updateGame({ game: newGame });
+			const currentObject = objects.find((o) => o.obj.id === currentObjId);
+			if (currentObject.index) {
+				const fixedPos = magneticPos(pos, currentObject.def.type);
+				newGame.objects[currentObject.index].pos = fixedPos;
+				console.log({ currentObjId, pos, fixedPos });
+				updateGame({ game: { objects: newGame.objects } });
 			}
 		}
 	};

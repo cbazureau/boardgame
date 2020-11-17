@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Communication from './Communication';
 import { connect } from 'react-redux';
 import store from '../store';
@@ -35,6 +35,24 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 		socket.current.emit('leave');
 		setUser('guest');
 	};
+
+	/**
+   * send
+   */
+	const send = useCallback(
+		() => {
+			const authInfo = {
+				sid: currentSid,
+				message: 'Please invite me !',
+				audio: isAudioEnabled,
+				video: isVideoEnabled
+			};
+			console.log('[Room] send', authInfo);
+			socket.current.emit('auth', authInfo);
+			setStatus(STATUS.CONNECTING);
+		},
+		[ currentSid, isAudioEnabled, isVideoEnabled ]
+	);
 
 	useBeforeUnload(() => {
 		if (isMediaActive) {
@@ -128,23 +146,8 @@ const Room = ({ addRoom, match, isVideoEnabled, isAudioEnabled, setVideo, setAud
 				create();
 			}
 		},
-		[ isMediaActive, isAudioEnabled, isVideoEnabled, user, roomId, game, updateGame ]
+		[ isMediaActive, isAudioEnabled, isVideoEnabled, user, roomId, game, updateGame, send ]
 	);
-
-	/**
-   * send
-   */
-	const send = () => {
-		const authInfo = {
-			sid: currentSid,
-			message: 'Please invite me !',
-			audio: isAudioEnabled,
-			video: isVideoEnabled
-		};
-		console.log('[Room] send', authInfo);
-		socket.current.emit('auth', authInfo);
-		setStatus(STATUS.CONNECTING);
-	};
 
 	/**
    * handleInvitation

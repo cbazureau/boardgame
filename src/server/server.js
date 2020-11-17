@@ -68,8 +68,8 @@ io.sockets.on('connection', (socket) => {
 	// play
 	socket.on('play', ({ game }) => {
 		console.log('[server] play', socket.id, game.objects);
-		rooms[room].game = game;
-		io.to(room).emit('update', { game: rooms[room].game });
+		rooms[room].game = { ...rooms[room].game, ...game };
+		io.to(room).emit('update', { game });
 	});
 
 	// accept
