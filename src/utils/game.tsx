@@ -2,9 +2,9 @@
  * prepare
  * @param {*} game
  */
-export const prepare = game => {
+export const prepare = (game: Game): Game => {
   if (!game.magneticGrid) return game;
-  const magneticGrid = game.magneticGrid.reduce((acc, item) => {
+  const magneticGrid = game.magneticGrid.reduce((acc: Array<any>, item: any) => {
     if (item.type === 'auto') {
       let gridPoints = [];
       for (let i = 0; i < item.nbX; i++) {
@@ -31,6 +31,6 @@ export const prepare = game => {
  * @param {*} pos
  * @param {*} type
  */
-export const magneticPos = (pos, type) => {
+export const magneticPos = (pos: Pos, type: string) => {
   return pos;
 };

@@ -1,4 +1,4 @@
-const game = {
+const game: Game = {
   name: 'Chess',
   size: {
     width: 700,

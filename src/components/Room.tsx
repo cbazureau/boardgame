@@ -16,6 +16,17 @@ import RoomControls from './RoomControl';
 import Game from './Game';
 import STATUS from '../utils/status';
 
+type Props = {
+  addRoom: (room: Room) => void;
+  match: any;
+  isAudioEnabled: boolean;
+  isVideoEnabled: boolean;
+  setVideo: (val: boolean) => void;
+  setAudio: (val: boolean) => void;
+  game: Game;
+  updateGame: (updateGame: { game: Game }) => void;
+};
+
 /**
  * Room
  * Create or access to a room
@@ -29,7 +40,7 @@ const Room = ({
   setAudio,
   game,
   updateGame,
-}) => {
+}: Props) => {
   const socketDomain =
     window.location.host === 'localhost:3000' ? 'localhost:5000' : 'sandboard-server.herokuapp.com';
   const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
@@ -38,8 +49,8 @@ const Room = ({
   const [user, setUser] = useState('');
   const [currentMessage, setMessage] = useState('');
   const [currentSid, setSid] = useState('');
-  const remoteVideo = useRef(null);
-  const localVideo = useRef(null);
+  const remoteVideo: React.MutableRefObject<any> = useRef(null);
+  const localVideo: React.MutableRefObject<any> = useRef(null);
   const socket = useRef(io.connect(`${protocol}://${socketDomain}`));
   const [isMediaActive, setMediaActive] = useState(false);
   const roomId = match.params.room;
@@ -85,16 +96,16 @@ const Room = ({
   }, [addRoom, roomId]);
 
   useEffect(() => {
-    const onRemoteStream = stream => {
+    const onRemoteStream = (stream: any) => {
       console.log('[Room] onRemoteStream');
       remoteVideo.current.srcObject = stream;
       setStatus(STATUS.ESTABLISHED);
     };
-    const onLocalStream = stream => {
+    const onLocalStream = (stream: any) => {
       console.log('[Room] onLocalStream');
       localVideo.current.srcObject = stream;
     };
-    const onApprove = ({ message, sid }) => {
+    const onApprove = ({ message, sid }: { message: any; sid: any }) => {
       console.log('[Room] onApprove', message, sid);
       setMessage(message);
       setSid(sid);
@@ -157,7 +168,7 @@ const Room = ({
    * handleInvitation
    * @param {*} response (accept/reject)
    */
-  const handleInvitation = response => () => {
+  const handleInvitation = (response: string) => () => {
     console.log('[Room] handleInvitation', response, currentSid);
     if (response === 'accept') {
       socket.current.emit('accept', currentSid);
@@ -197,7 +208,7 @@ const Room = ({
    * updateSocketGame
    * @param {*} param0
    */
-  const updateSocketGame = ({ game }) => {
+  const updateSocketGame = ({ game }: { game: Game }) => {
     socket.current.emit('play', { game });
   };
 
@@ -235,16 +246,16 @@ const Room = ({
   );
 };
 
-const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } }) => ({
+const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } }: Store) => ({
   game,
   rooms,
   isVideoEnabled,
   isAudioEnabled,
 });
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  updateGame: ({ game }) => store.dispatch({ type: 'UPDATE_GAME', game }),
-  addRoom: roomId => store.dispatch({ type: 'ADD_ROOM', room: roomId }),
-  setVideo: enabled => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),
-  setAudio: enabled => store.dispatch({ type: 'SET_AUDIO', isAudioEnabled: enabled }),
+const mapDispatchToProps = () => ({
+  updateGame: ({ game }: { game: Game }) => store.dispatch({ type: 'UPDATE_GAME', game }),
+  addRoom: (roomId: Room) => store.dispatch({ type: 'ADD_ROOM', room: roomId }),
+  setVideo: (enabled: boolean) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),
+  setAudio: (enabled: boolean) => store.dispatch({ type: 'SET_AUDIO', isAudioEnabled: enabled }),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Room);
