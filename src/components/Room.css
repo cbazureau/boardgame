@@ -1,4 +1,3 @@
-
 .Room {
   display: flex;
   flex-direction: row;
@@ -11,7 +10,6 @@
 }
 
 .Room__videos {
-  background-color: gray;
   align-items: center;
   justify-content: flex-start;
   display: flex;
@@ -24,11 +22,16 @@
 .Room__video {
   display: block;
   height: auto;
-  width: 200px;
+  width: 120px;
+  height: 120px;
+  border: 2px solid green;
+  margin: 8px 8px 8px 64px;
+
   object-fit: cover;
+  border-radius: 50%;
 }
 .Room__video.is-local {
-  filter: grayscale(0.8);
+  filter: grayscale(0.9);
 }
 .Room__videos:not(.is-established) .Room__video.is-remote {
   display: none;
