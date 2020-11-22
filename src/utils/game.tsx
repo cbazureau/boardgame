@@ -40,6 +40,7 @@ export const prepare = (game: Game): Game => {
 /**
  * magneticPos
  * @param {*} pos
+ * @param {*} magneticGrid
  * @param {*} type
  */
 export const magneticPos = (pos: Pos, magneticGrid?: Array<MagneticGridElement>, type?: string) => {

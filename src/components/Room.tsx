@@ -83,7 +83,7 @@ const Room = ({
       console.log('[Room] useBeforeUnload handleHangup');
       onHangUp();
     }
-  }, [isMediaActive])
+  }, [isMediaActive]);
 
   useBeforeUnload(beforeUnload);
 
@@ -214,12 +214,19 @@ const Room = ({
     socket.current.emit('play', { game });
   };
 
+  /**
+   * resetGame
+   */
+  const resetGame = () => {
+    socket.current.emit('reset');
+  };
+
   console.log('[Room] status', status, isMediaActive);
 
   return (
     <div className="Room">
       <div className="Room__game">
-        <Game game={game} updateGame={updateSocketGame} />
+        <Game game={game} updateGame={updateSocketGame} resetGame={resetGame} />
       </div>
 
       <div className={`Room__videos ${status === STATUS.ESTABLISHED ? 'is-established' : ''}`}>

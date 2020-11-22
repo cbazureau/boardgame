@@ -7,9 +7,10 @@ import { magneticPos } from '../utils/game';
 type Props = {
   game: Game;
   updateGame: (updateInfo: { game: GameUpdate }) => void;
+  resetGame: () => void;
 };
 
-const Game = ({ game, updateGame }: Props) => {
+const Game = ({ game, updateGame, resetGame }: Props) => {
   const currentLimit: React.MutableRefObject<any> = useRef();
 
   const objects = useMemo(() => {
@@ -47,6 +48,7 @@ const Game = ({ game, updateGame }: Props) => {
 
   return (
     <div className="Game">
+      <button onClick={resetGame}>Reset</button>
       <div className="Game__limits" style={gameLimits} ref={currentLimit}>
         {objects.map((o: GameObjectWithDef) => (
           <GameObject key={o.obj.id} def={o.def} obj={o.obj} onChange={onChange} />
