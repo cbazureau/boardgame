@@ -448,7 +448,7 @@ const game: Game = {
     },
     {
       id: 31,
-      type: 'black_queen',
+      type: 'black_king',
       pos: {
         top: 425,
         left: 225,
@@ -456,7 +456,7 @@ const game: Game = {
     },
     {
       id: 32,
-      type: 'white_queen',
+      type: 'white_king',
       pos: {
         top: 75,
         left: 225,
@@ -464,7 +464,7 @@ const game: Game = {
     },
     {
       id: 33,
-      type: 'black_king',
+      type: 'black_queen',
       pos: {
         top: 425,
         left: 275,
@@ -472,7 +472,7 @@ const game: Game = {
     },
     {
       id: 34,
-      type: 'white_king',
+      type: 'white_queen',
       pos: {
         top: 75,
         left: 275,
