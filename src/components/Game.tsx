@@ -37,7 +37,7 @@ const Game = ({ game, updateGame }: Props) => {
       const newGame = _cloneDeep(game);
       const currentObject = objects.find(o => o.obj.id === currentObjId);
       if (currentObject && currentObject.index) {
-        const fixedPos = magneticPos(pos, currentObject.def.type);
+        const fixedPos = magneticPos(pos, game.magneticGrid, currentObject.def.type);
         newGame.objects[currentObject.index].pos = fixedPos;
         console.log({ currentObjId, pos, fixedPos });
         updateGame({ game: { objects: newGame.objects } });

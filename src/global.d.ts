@@ -4,6 +4,20 @@ type Pos = {
   left: number;
 };
 
+type MagneticGridElement = {
+  pos?: Pos;
+  type: string;
+  forAvailableObjectsType: Array<string>;
+  autoInfo?: {
+    left: number;
+    top: number;
+    intervalX: number;
+    intervalY: number;
+    nbX: number;
+    nbY: number;
+  };
+};
+
 type GameObjectDef = any;
 type GameObject = {
   id: number;
@@ -18,7 +32,7 @@ type Game = {
     width: number;
     height: number;
   };
-  magneticGrid?: Array<any>;
+  magneticGrid?: Array<MagneticGridElement>;
   playerRequired?: {
     min: number;
     max: number;

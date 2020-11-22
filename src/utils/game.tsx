@@ -7,13 +7,16 @@ export const prepare = (game: Game): Game => {
   const magneticGrid = game.magneticGrid.reduce((acc: Array<any>, item: any) => {
     if (item.type === 'auto') {
       let gridPoints = [];
-      for (let i = 0; i < item.nbX; i++) {
-        for (let j = 0; j < item.nbY; j++) {
+      const { left, top, intervalX, intervalY, nbX, nbY } = item.autoInfo || {};
+      for (let i = 0; i < nbX; i++) {
+        for (let j = 0; j < nbY; j++) {
           gridPoints.push({
             type: 'default',
             forAvailableObjectsType: item.forAvailableObjectsType,
-            x: item.left + i * item.intervalX,
-            y: item.top + j * item.intervalY,
+            pos: {
+              left: left + i * intervalX,
+              top: top + j * intervalY,
+            },
           });
         }
       }
@@ -31,6 +34,25 @@ export const prepare = (game: Game): Game => {
  * @param {*} pos
  * @param {*} type
  */
-export const magneticPos = (pos: Pos, type: string) => {
-  return pos;
+export const magneticPos = (pos: Pos, magneticGrid?: Array<MagneticGridElement>, type?: string) => {
+  if (!magneticGrid || !type) return pos;
+  const magneticGridFiltered = magneticGrid.filter(
+    (e: MagneticGridElement) => e.forAvailableObjectsType.includes(type) && e.type === 'default',
+  );
+  if (!magneticGridFiltered) return pos;
+  const finalPos = magneticGridFiltered.reduce(
+    (acc: Pos, item: MagneticGridElement) => {
+      const { left, top } = item.pos || {};
+      const { left: leftAcc, top: topAcc } = acc || {};
+      if (!left || !top) return acc;
+      if (
+        Math.pow(pos.left - left, 2) + Math.pow(pos.top - top, 2) <
+        Math.pow(pos.left - leftAcc, 2) + Math.pow(pos.top - topAcc, 2)
+      )
+        return { left, top };
+      return acc;
+    },
+    { left: 0, top: 0 },
+  );
+  return finalPos;
 };

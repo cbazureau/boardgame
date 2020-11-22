@@ -8,12 +8,14 @@ const game: Game = {
     {
       type: 'auto',
       forAvailableObjectsType: ['pawn'],
-      top: 75,
-      left: 75,
-      nbX: 8,
-      nbY: 8,
-      intervalX: 50,
-      intervalY: 50,
+      autoInfo: {
+        top: 75,
+        left: 75,
+        nbX: 8,
+        nbY: 8,
+        intervalX: 50,
+        intervalY: 50,
+      }
     },
   ],
   playerRequired: {
