@@ -4,11 +4,17 @@ type Pos = {
   left: number;
 };
 
+enum MagneticGridType {
+  magnetic = "magnetic",
+  onlyOne = "onlyOne"
+};
+
 type MagneticGridElement = {
   pos?: Pos;
-  type: string;
+  mode?: string;
+  type: Array<string>;
   forAvailableObjectsType: Array<string>;
-  autoInfo?: {
+  gridInfo?: {
     left: number;
     top: number;
     intervalX: number;

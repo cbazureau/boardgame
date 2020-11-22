@@ -1,3 +1,11 @@
+const MAGNETIC_TYPES = {
+  MAGNETIC: 'magnetic',
+  ONLY_ONE: 'onlyOne',
+};
+const MAGNETIC_MODE = {
+  GRID: 'grid',
+};
+
 /**
  * prepare
  * @param {*} game
@@ -5,13 +13,13 @@
 export const prepare = (game: Game): Game => {
   if (!game.magneticGrid) return game;
   const magneticGrid = game.magneticGrid.reduce((acc: Array<any>, item: any) => {
-    if (item.type === 'auto') {
+    if (item.mode === MAGNETIC_MODE.GRID) {
       let gridPoints = [];
-      const { left, top, intervalX, intervalY, nbX, nbY } = item.autoInfo || {};
+      const { left, top, intervalX, intervalY, nbX, nbY } = item.gridInfo || {};
       for (let i = 0; i < nbX; i++) {
         for (let j = 0; j < nbY; j++) {
           gridPoints.push({
-            type: 'default',
+            type: item.type,
             forAvailableObjectsType: item.forAvailableObjectsType,
             pos: {
               left: left + i * intervalX,
@@ -37,7 +45,8 @@ export const prepare = (game: Game): Game => {
 export const magneticPos = (pos: Pos, magneticGrid?: Array<MagneticGridElement>, type?: string) => {
   if (!magneticGrid || !type) return pos;
   const magneticGridFiltered = magneticGrid.filter(
-    (e: MagneticGridElement) => e.forAvailableObjectsType.includes(type) && e.type === 'default',
+    (e: MagneticGridElement) =>
+      e.forAvailableObjectsType.includes(type) && e.type.includes(MAGNETIC_TYPES.MAGNETIC),
   );
   if (!magneticGridFiltered) return pos;
   const finalPos = magneticGridFiltered.reduce(
