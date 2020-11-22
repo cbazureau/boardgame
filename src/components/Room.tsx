@@ -78,12 +78,14 @@ const Room = ({
     setStatus(STATUS.CONNECTING);
   }, [currentSid, isAudioEnabled, isVideoEnabled]);
 
-  useBeforeUnload(() => {
+  const beforeUnload = useCallback(() => {
     if (isMediaActive) {
       console.log('[Room] useBeforeUnload handleHangup');
       onHangUp();
     }
-  });
+  }, [isMediaActive])
+
+  useBeforeUnload(beforeUnload);
 
   useEffect(() => {
     if (isMediaActive) {
@@ -208,11 +210,11 @@ const Room = ({
    * updateSocketGame
    * @param {*} param0
    */
-  const updateSocketGame = ({ game }: { game: Game }) => {
+  const updateSocketGame = ({ game }: { game: GameUpdate }) => {
     socket.current.emit('play', { game });
   };
 
-  console.log('[Room] status', status);
+  console.log('[Room] status', status, isMediaActive);
 
   return (
     <div className="Room">
@@ -253,7 +255,7 @@ const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } 
   isAudioEnabled,
 });
 const mapDispatchToProps = () => ({
-  updateGame: ({ game }: { game: Game }) => store.dispatch({ type: 'UPDATE_GAME', game }),
+  updateGame: ({ game }: { game: GameUpdate }) => store.dispatch({ type: 'UPDATE_GAME', game }),
   addRoom: (roomId: Room) => store.dispatch({ type: 'ADD_ROOM', room: roomId }),
   setVideo: (enabled: boolean) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),
   setAudio: (enabled: boolean) => store.dispatch({ type: 'SET_AUDIO', isAudioEnabled: enabled }),

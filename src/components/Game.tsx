@@ -6,7 +6,7 @@ import { magneticPos } from '../utils/game';
 
 type Props = {
   game: Game;
-  updateGame: (updateInfo: { game: Game }) => void;
+  updateGame: (updateInfo: { game: GameUpdate }) => void;
 };
 
 const Game = ({ game, updateGame }: Props) => {
@@ -17,7 +17,7 @@ const Game = ({ game, updateGame }: Props) => {
       let sprite = undefined;
       const def = game.availableObjects.find((o: GameObject) => o.id === obj.type);
       if (def.spriteId) {
-        sprite = game.sprites.find((s: any) => s.id === def.spriteId);
+        sprite = (game.sprites || []).find((s: any) => s.id === def.spriteId);
       }
       return {
         def: { ...def, sprite },
@@ -35,8 +35,8 @@ const Game = ({ game, updateGame }: Props) => {
   const onChange = (currentObjId: number, pos: Pos) => {
     if (currentObjId) {
       const newGame = _cloneDeep(game);
-      const currentObject = objects.find((o: GameObject) => o.obj.id === currentObjId);
-      if (currentObject.index) {
+      const currentObject = objects.find(o => o.obj.id === currentObjId);
+      if (currentObject && currentObject.index) {
         const fixedPos = magneticPos(pos, currentObject.def.type);
         newGame.objects[currentObject.index].pos = fixedPos;
         console.log({ currentObjId, pos, fixedPos });

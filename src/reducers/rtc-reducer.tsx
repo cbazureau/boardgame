@@ -1,4 +1,3 @@
-import Game from '../components/Game';
 import game from '../game/chess';
 import { prepare } from '../utils/game';
 
@@ -11,7 +10,7 @@ const initalState: RTCstore = {
 
 type ActionType = {
   type: string;
-  game?: Game;
+  game?: GameUpdate;
   room?: Room;
   isVideoEnabled?: boolean;
   isAudioEnabled?: boolean;
