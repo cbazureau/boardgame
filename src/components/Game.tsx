@@ -2,7 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import './Game.css';
 import _cloneDeep from 'lodash/cloneDeep';
 import GameObject from './GameObject';
-import { magneticPos } from '../utils/game';
+import { magneticPos, onlyOne } from '../utils/game';
 
 type Props = {
   game: Game;
@@ -40,6 +40,7 @@ const Game = ({ game, updateGame, resetGame }: Props) => {
       if (currentObject && currentObject.index) {
         const fixedPos = magneticPos(pos, game.magneticGrid, currentObject.def.type);
         newGame.objects[currentObject.index].pos = fixedPos;
+        newGame.objects = onlyOne(newGame.objects[currentObject.index], newGame);
         console.log({ currentObjId, pos, fixedPos });
         updateGame({ game: { objects: newGame.objects } });
       }

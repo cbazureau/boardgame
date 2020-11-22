@@ -1,3 +1,5 @@
+import _isEqual from 'lodash/isEqual';
+
 const MAGNETIC_TYPES = {
   MAGNETIC: 'magnetic',
   ONLY_ONE: 'onlyOne',
@@ -65,4 +67,25 @@ export const magneticPos = (pos: Pos, magneticGrid?: Array<MagneticGridElement>,
     { left: 0, top: 0 },
   );
   return finalPos;
+};
+
+/**
+ * onlyOne
+ * @param index
+ * @param game
+ */
+export const onlyOne = (currentObject: GameObject, game: Game): Array<GameObject> => {
+  console.log('onlyOne');
+  if (!game.objects || !game.magneticGrid) return game.objects;
+  if (game.magneticGrid) {
+    const gridPoint = game.magneticGrid.find(m => _isEqual(m.pos, currentObject.pos));
+    console.log('onlyOne', gridPoint);
+    if (gridPoint && gridPoint.type.includes(MAGNETIC_TYPES.ONLY_ONE)) {
+      return game.objects.filter(
+        o => !_isEqual(o.pos, currentObject.pos) || o.id === currentObject.id,
+      );
+    }
+  }
+
+  return game.objects;
 };

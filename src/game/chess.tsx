@@ -7,7 +7,7 @@ const game: Game = {
   magneticGrid: [
     {
       mode: 'grid',
-      type: ['magnetic'],
+      type: ['magnetic', 'onlyOne'],
       forAvailableObjectsType: ['pawn'],
       gridInfo: {
         top: 75,
