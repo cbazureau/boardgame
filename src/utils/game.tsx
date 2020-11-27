@@ -1,4 +1,5 @@
 import _isEqual from 'lodash/isEqual';
+import _cloneDeep from 'lodash/cloneDeep';
 
 const MAGNETIC_TYPES = {
   MAGNETIC: 'magnetic',
@@ -16,7 +17,7 @@ export const prepare = (game: Game): Game => {
   if (!game.magneticGrid) return game;
   const magneticGrid = game.magneticGrid.reduce((acc: Array<any>, item: any) => {
     if (item.mode === MAGNETIC_MODE.GRID) {
-      let gridPoints = [];
+      const gridPoints = [];
       const { left, top, intervalX, intervalY, nbX, nbY } = item.gridInfo || {};
       for (let i = 0; i < nbX; i++) {
         for (let j = 0; j < nbY; j++) {
@@ -45,14 +46,21 @@ export const prepare = (game: Game): Game => {
  * @param {*} magneticGrid
  * @param {*} type
  */
-export const magneticPos = (pos: Pos, magneticGrid?: Array<MagneticGridElement>, type?: string) => {
-  if (!magneticGrid || !type) return pos;
+export const magneticPos = (
+  currentGame: Game,
+  currentObject: GameObjectWithDef,
+  pos: Pos,
+): Game => {
+  const game = _cloneDeep(currentGame);
+  const { magneticGrid } = game;
+  const { type } = currentObject.def;
+  if (!magneticGrid || !type) return game;
   const magneticGridFiltered = magneticGrid.filter(
     (e: MagneticGridElement) =>
       e.forAvailableObjectsType.includes(type) && e.type.includes(MAGNETIC_TYPES.MAGNETIC),
   );
-  if (!magneticGridFiltered) return pos;
-  const finalPos = magneticGridFiltered.reduce(
+  if (!magneticGridFiltered) return game;
+  const fixedPos = magneticGridFiltered.reduce(
     (acc: Pos, item: MagneticGridElement) => {
       const { left, top } = item.pos || {};
       const { left: leftAcc, top: topAcc } = acc || {};
@@ -66,7 +74,9 @@ export const magneticPos = (pos: Pos, magneticGrid?: Array<MagneticGridElement>,
     },
     { left: 0, top: 0 },
   );
-  return finalPos;
+
+  game.objects[currentObject.index].pos = fixedPos;
+  return game;
 };
 
 /**
@@ -74,18 +84,64 @@ export const magneticPos = (pos: Pos, magneticGrid?: Array<MagneticGridElement>,
  * @param index
  * @param game
  */
-export const onlyOne = (currentObject: GameObject, game: Game): Array<GameObject> => {
+export const onlyOne = (game: Game, currentObject: GameObject): Game => {
   console.log('onlyOne');
-  if (!game.objects || !game.magneticGrid) return game.objects;
+  if (!game.objects || !game.magneticGrid) return game;
   if (game.magneticGrid) {
     const gridPoint = game.magneticGrid.find(m => _isEqual(m.pos, currentObject.pos));
     console.log('onlyOne', gridPoint);
     if (gridPoint && gridPoint.type.includes(MAGNETIC_TYPES.ONLY_ONE)) {
-      return game.objects.filter(
-        o => !_isEqual(o.pos, currentObject.pos) || o.id === currentObject.id,
-      );
+      return {
+        ...game,
+        objects: game.objects.filter(
+          o => !_isEqual(o.pos, currentObject.pos) || o.id === currentObject.id,
+        ),
+      };
     }
   }
 
-  return game.objects;
+  return game;
+};
+
+/**
+ * moveObject
+ * @param game
+ * @param currentObject
+ * @param pos
+ */
+export const moveObject = (game: Game, currentObject: GameObjectWithDef, pos: Pos): Game => {
+  if (currentObject && currentObject.index) {
+    let newGame = _cloneDeep(game);
+    // Magnetic
+    newGame = magneticPos(newGame, currentObject, pos);
+    // onlyOne
+    newGame = onlyOne(newGame, newGame.objects[currentObject.index]);
+    return newGame;
+  }
+  return game;
+};
+
+/**
+ * getObjectsWithDef
+ * @param game
+ */
+export const getObjectsWithDef = (game: Game): Array<GameObjectWithDef> => {
+  return game.objects
+    .map(
+      (obj: GameObject, index: number): GameObjectWithDef => {
+        let sprite;
+        const def = game.availableObjects.find(
+          (d: GameObjectDef) => d.id === obj.type,
+        ) as GameObjectDef;
+        if (def.spriteId) {
+          sprite = (game.sprites || []).find((s: Sprite) => s.id === def.spriteId);
+        }
+        return {
+          def: { ...def, sprite },
+          obj,
+          index,
+        };
+      },
+    )
+    .filter((o: GameObjectWithDef) => !!o);
 };
