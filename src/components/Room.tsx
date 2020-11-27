@@ -17,14 +17,13 @@ import Game from './Game';
 import STATUS from '../utils/status';
 
 type Props = {
-  addRoom: (room: Room) => void;
   match: any;
   isAudioEnabled: boolean;
   isVideoEnabled: boolean;
   setVideo: (val: boolean) => void;
   setAudio: (val: boolean) => void;
-  game: Game;
-  updateGame: (updateGame: { game: Game }) => void;
+  game: Game | void;
+  updateGame: (updateInfos: { game?: GameUpdate | Game; users?: Array<User> }) => void;
 };
 
 /**
@@ -32,7 +31,6 @@ type Props = {
  * Create or access to a room
  */
 const Room = ({
-  addRoom,
   match,
   isVideoEnabled,
   isAudioEnabled,
@@ -45,7 +43,7 @@ const Room = ({
     window.location.host === 'localhost:3000' ? 'localhost:5000' : 'sandboard-server.herokuapp.com';
   const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
 
-  const [status, setStatus] = useState(STATUS.IN_LOBBY);
+  const [status, setStatus] = useState(STATUS.GETTING_ROOM);
   const [user, setUser] = useState('');
   const [currentMessage, setMessage] = useState('');
   const [currentSid, setSid] = useState('');
@@ -94,77 +92,90 @@ const Room = ({
   }, [user, isMediaActive]);
 
   useEffect(() => {
-    addRoom(roomId);
-  }, [addRoom, roomId]);
+    if (status === STATUS.GETTING_ROOM) {
+      const onApprove = ({ message, sid }: { message: any; sid: any }) => {
+        console.log('[Room] onApprove', message, sid);
+        setMessage(message);
+        setSid(sid);
+        // Manuel accept
+        // setStatus(STATUS.APPROVE);
 
-  useEffect(() => {
-    const onRemoteStream = (stream: any) => {
-      console.log('[Room] onRemoteStream');
-      remoteVideo.current.srcObject = stream;
-      setStatus(STATUS.ESTABLISHED);
-    };
-    const onLocalStream = (stream: any) => {
-      console.log('[Room] onLocalStream');
-      localVideo.current.srcObject = stream;
-    };
-    const onApprove = ({ message, sid }: { message: any; sid: any }) => {
-      console.log('[Room] onApprove', message, sid);
-      setMessage(message);
-      setSid(sid);
-      // Manuel accept
-      // setStatus(STATUS.APPROVE);
+        // Auto accept
+        socket.current.emit('accept', sid);
+        setStatus(STATUS.CONNECTING);
+      };
+      const onJoin = () => {
+        console.log('[Room] onJoin');
+        setStatus(STATUS.JOIN);
+        setUser('guest');
 
-      // Auto accept
-      socket.current.emit('accept', sid);
-      setStatus(STATUS.CONNECTING);
-    };
-    const onJoin = () => {
-      console.log('[Room] onJoin');
-      setStatus(STATUS.JOIN);
-      setUser('guest');
+        // Auto request to join
+        send();
+      };
+      const onCreate = () => {
+        console.log('[Room] onCreate');
+        setStatus(STATUS.CREATE);
+        setUser('host');
+      };
+      const onFull = () => {
+        console.log('[Room] onFull');
+        setStatus(STATUS.FULL);
+      };
 
-      // Auto request to join
-      send();
-    };
-    const onCreate = () => {
-      console.log('[Room] onCreate');
-      setStatus(STATUS.CREATE);
-      setUser('host');
-    };
-    const onFull = () => {
-      console.log('[Room] onFull');
-      setStatus(STATUS.FULL);
-    };
+      const onEnterLobby = ({ currentUser }: { currentUser: User }) => {
+        console.log('[Room] onEnterLobby', { currentUser });
+        setStatus(STATUS.IN_LOBBY);
+      };
 
-    const onRemoteHangup = () => {
-      setStatus(STATUS.CREATE);
-      setUser('host');
-    };
-
-    const create = async () => {
-      console.log('[Room] createLocalStream');
-      await createLocalStream({
-        socket: socket.current,
-        isVideoEnabled,
-        isAudioEnabled,
-        onLocalStream,
-        onRemoteStream,
-        user,
-      });
-      setMediaActive(true);
+      const onRemoteHangup = () => {
+        setStatus(STATUS.CREATE);
+        setUser('host');
+      };
       socket.current.on('hangup', onRemoteHangup);
+      socket.current.on('enter-lobby', onEnterLobby);
       socket.current.on('create', onCreate);
       socket.current.on('full', onFull);
       socket.current.on('join', onJoin);
       socket.current.on('approve', onApprove);
       socket.current.on('update', updateGame);
-      socket.current.emit('find', { roomId, user: 'Bob', game });
-    };
 
-    if (!isMediaActive) {
-      create();
+      // Emit a welcome to enter in the Lobby
+      socket.current.emit('welcome-lobby', { roomId });
     }
-  }, [isMediaActive, isAudioEnabled, isVideoEnabled, user, roomId, game, updateGame, send]);
+  }, [roomId, send, status, updateGame]);
+
+  /**
+   * onRemoteStream
+   * @param stream
+   */
+  const onRemoteStream = (stream: any) => {
+    console.log('[Room] onRemoteStream');
+    remoteVideo.current.srcObject = stream;
+    setStatus(STATUS.ESTABLISHED);
+  };
+
+  /**
+   * onLocalStream
+   * @param stream
+   */
+  const onLocalStream = (stream: any) => {
+    console.log('[Room] onLocalStream');
+    localVideo.current.srcObject = stream;
+  };
+
+  const create = async (selectedGame: Game) => {
+    console.log('[Room] createLocalStream');
+    await createLocalStream({
+      socket: socket.current,
+      isVideoEnabled,
+      isAudioEnabled,
+      onLocalStream,
+      onRemoteStream,
+      user,
+    });
+    setMediaActive(true);
+    socket.current.emit('welcome-game', { userName: 'Bob', game: selectedGame });
+  };
 
   /**
    * handleInvitation
@@ -207,6 +218,14 @@ const Room = ({
   };
 
   /**
+   * handleHangup
+   */
+  const sendInfos = (selectedGame: Game) => {
+    console.log('[Room] sendInfos');
+    if (!isMediaActive) create(selectedGame);
+  };
+
+  /**
    * updateSocketGame
    * @param {*} param0
    */
@@ -226,7 +245,7 @@ const Room = ({
   return (
     <div className="Room">
       <div className="Room__game">
-        <Game game={game} updateGame={updateSocketGame} resetGame={resetGame} />
+        {!!game && <Game game={game} updateGame={updateSocketGame} resetGame={resetGame} />}
       </div>
 
       <div className={`Room__videos ${status === STATUS.ESTABLISHED ? 'is-established' : ''}`}>
@@ -249,6 +268,7 @@ const Room = ({
         status={status}
         message={currentMessage}
         send={send}
+        sendInfos={sendInfos}
         handleInvitation={handleInvitation}
       />
     </div>
@@ -262,8 +282,8 @@ const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } 
   isAudioEnabled,
 });
 const mapDispatchToProps = () => ({
-  updateGame: ({ game }: { game: GameUpdate }) => store.dispatch({ type: 'UPDATE_GAME', game }),
-  addRoom: (roomId: Room) => store.dispatch({ type: 'ADD_ROOM', room: roomId }),
+  updateGame: ({ game, users }: { game?: GameUpdate | Game; users?: Array<User> }) =>
+    store.dispatch({ type: 'UPDATE_GAME', game, users }),
   setVideo: (enabled: boolean) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),
   setAudio: (enabled: boolean) => store.dispatch({ type: 'SET_AUDIO', isAudioEnabled: enabled }),
 });

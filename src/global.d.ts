@@ -1,12 +1,12 @@
-
 type Pos = {
   top: number;
   left: number;
 };
 
-enum MagneticGridType {
-  magnetic = "magnetic",
-  onlyOne = "onlyOne"
+type User = {
+  id: string;
+  isHost?: boolean;
+  status: string;
 };
 
 type MagneticGridElement = {
@@ -42,7 +42,7 @@ type Game = {
   playerRequired?: {
     min: number;
     max: number;
-  }
+  };
   sprites?: Array<any>;
   availableObjects: Array<GameObjectDef>;
   objects: Array<GameObject>;
@@ -50,13 +50,13 @@ type Game = {
 
 type GameUpdate = {
   objects: Array<GameObject>;
-}
+};
 
 type Room = string;
 
-
 type RTCstore = {
-  game: Game;
+  game?: Game;
+  users: Array<User>;
   isVideoEnabled: boolean;
   isAudioEnabled: boolean;
   rooms: Array<Room>;

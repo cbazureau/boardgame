@@ -3,7 +3,13 @@ import { Link } from 'react-router-dom';
 import './Communication.css';
 import STATUS from '../utils/status';
 
+import game from '../game/chess';
+import { prepare } from '../utils/game';
+
+const chessGame = prepare(game);
+
 type Props = {
+  sendInfos: (selectedGame: Game) => void;
   send: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   handleInvitation: (
     returnStatus: string,
@@ -12,14 +18,22 @@ type Props = {
   status: string;
 };
 
-const Communication = ({ send, handleInvitation, message, status }: Props) =>
-  status !== STATUS.ESTABLISHED && status !== STATUS.CREATE ? (
+const Communication = ({ send, sendInfos, handleInvitation, message, status }: Props) =>
+  [STATUS.JOIN, STATUS.APPROVE, STATUS.FULL, STATUS.IN_LOBBY].includes(status) ? (
     <div className="Communication">
       {status === STATUS.JOIN && (
         <div className="Communication__box">
           <p>Send an invitation to join the room.</p>
           <button onClick={send} type="button" className="primary-button">
             Send
+          </button>
+        </div>
+      )}
+      {status === STATUS.IN_LOBBY && (
+        <div className="Communication__box">
+          <p>Welcome to this room</p>
+          <button onClick={() => sendInfos(chessGame)} type="button" className="primary-button">
+            Send Infos
           </button>
         </div>
       )}

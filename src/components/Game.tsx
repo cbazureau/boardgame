@@ -6,7 +6,7 @@ import { magneticPos, onlyOne } from '../utils/game';
 
 type Props = {
   game: Game;
-  updateGame: (updateInfo: { game: GameUpdate }) => void;
+  updateGame: (updateInfos: { game: GameUpdate }) => void;
   resetGame: () => void;
 };
 
