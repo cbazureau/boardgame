@@ -18,7 +18,7 @@ const Communication = ({ send, handleInvitation, message, status }: Props) =>
       {status === STATUS.JOIN && (
         <div className="Communication__box">
           <p>Send an invitation to join the room.</p>
-          <button onClick={send} className="primary-button">
+          <button onClick={send} type="button" className="primary-button">
             Send
           </button>
         </div>
@@ -27,10 +27,20 @@ const Communication = ({ send, handleInvitation, message, status }: Props) =>
         <div className="Communication__box">
           <p>A peer has sent you a message to join the room:</p>
           <div>{message}</div>
-          <button onClick={handleInvitation('reject')} data-ref="reject" className="primary-button">
+          <button
+            onClick={handleInvitation('reject')}
+            type="button"
+            data-ref="reject"
+            className="primary-button"
+          >
             Reject
           </button>
-          <button onClick={handleInvitation('accept')} data-ref="accept" className="primary-button">
+          <button
+            onClick={handleInvitation('accept')}
+            type="button"
+            data-ref="accept"
+            className="primary-button"
+          >
             Accept
           </button>
         </div>

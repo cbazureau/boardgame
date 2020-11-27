@@ -15,7 +15,7 @@ const Game = ({ game, updateGame, resetGame }: Props) => {
 
   const objects = useMemo(() => {
     return game.objects.map((obj: any, index: number) => {
-      let sprite = undefined;
+      let sprite;
       const def = game.availableObjects.find((o: GameObject) => o.id === obj.type);
       if (def.spriteId) {
         sprite = (game.sprites || []).find((s: any) => s.id === def.spriteId);
@@ -49,7 +49,9 @@ const Game = ({ game, updateGame, resetGame }: Props) => {
 
   return (
     <div className="Game">
-      <button onClick={resetGame}>Reset</button>
+      <button onClick={resetGame} type="button">
+        Reset
+      </button>
       <div className="Game__limits" style={gameLimits} ref={currentLimit}>
         {objects.map((o: GameObjectWithDef) => (
           <GameObject key={o.obj.id} def={o.def} obj={o.obj} onChange={onChange} />

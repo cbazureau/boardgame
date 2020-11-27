@@ -1,6 +1,6 @@
 let pc: any = null;
 let dc: any = null;
-let remoteStream: Array<any> = [];
+const remoteStream: Array<any> = [];
 let localStream: any = null;
 let currentSocket: any = null;
 let getUserMedia: any = null;
@@ -25,11 +25,13 @@ const CONSTRAINTS = {
 
 window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
 
-export const setUserForMedia = (user: string) => (currentUser = user);
+export const setUserForMedia = (user: string): void => {
+  currentUser = user;
+};
 
 const setupDataHandlers = () => {
   dc.onmessage = (e: any) =>
-    console.log('[media.setupDataHandlers] data channel : ' + JSON.parse(e.data));
+    console.log(`[media.setupDataHandlers] data channel : ${JSON.parse(e.data)}`);
   dc.onclose = () => remoteStream[0].getVideoTracks()[0].stop();
 };
 
@@ -42,7 +44,7 @@ export const init = async ({
 }: {
   onRemoteStream: any;
   onLocalStream: any;
-}) => {
+}): Promise<void> => {
   console.log('[media.init]');
   // set up the peer connection
   // this is one of Google's public STUN servers
@@ -134,7 +136,7 @@ export const createLocalStream = async ({
   onLocalStream: any;
   onRemoteStream: any;
   user: string;
-}) => {
+}): Promise<void> => {
   currentSocket = socket;
   currentUser = user;
 
@@ -150,7 +152,7 @@ export const createLocalStream = async ({
 /**
  * hangup
  */
-export const hangup = () => {
+export const hangup = (): void => {
   if (pc) pc.close();
 };
 
@@ -158,7 +160,7 @@ export const hangup = () => {
  * toggleAudio
  * @param {*} enabled
  */
-export const toggleAudio = (enabled: boolean) => {
+export const toggleAudio = (enabled: boolean): void => {
   localStream.getAudioTracks()[0].enabled = enabled;
 };
 
@@ -166,6 +168,6 @@ export const toggleAudio = (enabled: boolean) => {
  * toggleVideo
  * @param {*} enabled
  */
-export const toggleVideo = (enabled: boolean) => {
+export const toggleVideo = (enabled: boolean): void => {
   localStream.getVideoTracks()[0].enabled = enabled;
 };

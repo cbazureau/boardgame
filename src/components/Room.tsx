@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Communication from './Communication';
-import { connect } from 'react-redux';
-import store from '../store';
 import io from 'socket.io-client';
+import { connect } from 'react-redux';
+import Communication from './Communication';
+import store from '../store';
 import {
   toggleAudio,
   setUserForMedia,
@@ -112,7 +112,7 @@ const Room = ({
       setMessage(message);
       setSid(sid);
       // Manuel accept
-      //setStatus(STATUS.APPROVE);
+      // setStatus(STATUS.APPROVE);
 
       // Auto accept
       socket.current.emit('accept', sid);
@@ -210,8 +210,8 @@ const Room = ({
    * updateSocketGame
    * @param {*} param0
    */
-  const updateSocketGame = ({ game }: { game: GameUpdate }) => {
-    socket.current.emit('play', { game });
+  const updateSocketGame = ({ game: newGame }: { game: GameUpdate }) => {
+    socket.current.emit('play', { game: newGame });
   };
 
   /**
