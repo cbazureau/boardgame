@@ -9,6 +9,11 @@ type User = {
   status: string;
 };
 
+type Size = {
+  width: number;
+  height: number;
+};
+
 type MagneticGridElement = {
   pos?: Pos;
   mode?: string;
@@ -24,13 +29,34 @@ type MagneticGridElement = {
   };
 };
 
-type GameObjectDef = any;
+type Sprite = {
+  id: string;
+  src: string;
+  size: Size;
+};
+
+type GameObjectDef = {
+  id: string;
+  type: string;
+  canMove?: boolean;
+  spriteId?: string;
+  inSpritePosition?: Pos;
+  src?: string;
+  sprite?: Sprite;
+  size: Size;
+};
+
 type GameObject = {
   id: number;
   type: string;
   pos: Pos;
 };
-type GameObjectWithDef = any;
+
+type GameObjectWithDef = {
+  obj: GameObject;
+  def: GameObjectDef;
+  index: number;
+};
 
 type Game = {
   name: string;
@@ -39,9 +65,8 @@ type Game = {
     height: number;
   };
   magneticGrid?: Array<MagneticGridElement>;
-  playerRequired?: {
-    min: number;
-    max: number;
+  players?: {
+    nbSlot: number;
   };
   sprites?: Array<any>;
   availableObjects: Array<GameObjectDef>;

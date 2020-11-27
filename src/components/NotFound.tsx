@@ -1,2 +1,3 @@
 import React from 'react';
-export default () => <h1>404.. This page is not found!</h1>;
+
+export default (): JSX.Element => <h1>404.. This page is not found!</h1>;

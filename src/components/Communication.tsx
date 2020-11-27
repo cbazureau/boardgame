@@ -18,7 +18,13 @@ type Props = {
   status: string;
 };
 
-const Communication = ({ send, sendInfos, handleInvitation, message, status }: Props) =>
+const Communication = ({
+  send,
+  sendInfos,
+  handleInvitation,
+  message,
+  status,
+}: Props): JSX.Element | null =>
   [STATUS.JOIN, STATUS.APPROVE, STATUS.FULL, STATUS.IN_LOBBY].includes(status) ? (
     <div className="Communication">
       {status === STATUS.JOIN && (

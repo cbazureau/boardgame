@@ -19,9 +19,8 @@ const game: Game = {
       },
     },
   ],
-  playerRequired: {
-    min: 2,
-    max: 2,
+  players: {
+    nbSlot: 2,
   },
   sprites: [
     {

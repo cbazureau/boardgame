@@ -38,7 +38,7 @@ const Room = ({
   setAudio,
   game,
   updateGame,
-}: Props) => {
+}: Props): JSX.Element => {
   const socketDomain =
     window.location.host === 'localhost:3000' ? 'localhost:5000' : 'sandboard-server.herokuapp.com';
   const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';

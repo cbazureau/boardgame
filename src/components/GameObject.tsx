@@ -9,7 +9,7 @@ type Props = {
   onChange: (currentObjectId: number, pos: Pos) => void;
 };
 
-const GameObject = ({ def, obj, onChange }: Props) => {
+const GameObject = ({ def, obj, onChange }: Props): JSX.Element => {
   const objRef: React.MutableRefObject<any> = useRef();
   const { dragPosition, isDragging } = useDraggable({
     target: def.canMove ? objRef.current : undefined,
@@ -18,15 +18,17 @@ const GameObject = ({ def, obj, onChange }: Props) => {
   });
   const top = dragPosition.top - def.size.height / 2;
   const left = dragPosition.left - def.size.width / 2;
+  let cursor = 'auto';
+  if (def.canMove) cursor = isDragging ? 'grab' : 'pointer';
   const styles = {
     backgroundColor: isDragging ? 'red' : 'transparent',
-    cursor: def.canMove ? (isDragging ? 'grab' : 'pointer') : 'auto',
+    cursor,
     top: `${top}px`,
     left: `${left}px`,
     width: `${def.size.width}px`,
     height: `${def.size.height}px`,
     background: `url("${def.sprite ? def.sprite.src : def.src}") 0 0 no-repeat`,
-    backgroundPosition: def.sprite
+    backgroundPosition: def.inSpritePosition
       ? `-${def.inSpritePosition.left}px -${def.inSpritePosition.top}px`
       : undefined,
     backgroundSize: def.sprite

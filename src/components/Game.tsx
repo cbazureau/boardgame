@@ -10,22 +10,28 @@ type Props = {
   resetGame: () => void;
 };
 
-const Game = ({ game, updateGame, resetGame }: Props) => {
+const Game = ({ game, updateGame, resetGame }: Props): JSX.Element => {
   const currentLimit: React.MutableRefObject<any> = useRef();
 
-  const objects = useMemo(() => {
-    return game.objects.map((obj: any, index: number) => {
-      let sprite;
-      const def = game.availableObjects.find((o: GameObject) => o.id === obj.type);
-      if (def.spriteId) {
-        sprite = (game.sprites || []).find((s: any) => s.id === def.spriteId);
-      }
-      return {
-        def: { ...def, sprite },
-        obj,
-        index,
-      };
-    });
+  const objects = useMemo((): Array<GameObjectWithDef> => {
+    return game.objects
+      .map(
+        (obj: GameObject, index: number): GameObjectWithDef => {
+          let sprite;
+          const def = game.availableObjects.find(
+            (d: GameObjectDef) => d.id === obj.type,
+          ) as GameObjectDef;
+          if (def.spriteId) {
+            sprite = (game.sprites || []).find((s: Sprite) => s.id === def.spriteId);
+          }
+          return {
+            def: { ...def, sprite },
+            obj,
+            index,
+          };
+        },
+      )
+      .filter((o: GameObjectWithDef) => !!o);
   }, [game]);
 
   const gameLimits = {
@@ -41,7 +47,6 @@ const Game = ({ game, updateGame, resetGame }: Props) => {
         const fixedPos = magneticPos(pos, game.magneticGrid, currentObject.def.type);
         newGame.objects[currentObject.index].pos = fixedPos;
         newGame.objects = onlyOne(newGame.objects[currentObject.index], newGame);
-        console.log({ currentObjId, pos, fixedPos });
         updateGame({ game: { objects: newGame.objects } });
       }
     }

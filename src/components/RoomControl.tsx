@@ -18,7 +18,7 @@ const RoomControls = ({
   isVideoEnabled,
   handleHangup,
   status,
-}: Props) => (
+}: Props): JSX.Element => (
   <div className="RoomControls">
     <button onClick={toggleAudio} className="RoomControls__control" type="button">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" className="svg">

@@ -9,7 +9,7 @@ type Props = {
 
 const DEFAULT_ROOM: string = String(new Date().getTime() - new Date().setHours(0, 0, 0, 0));
 
-const Home = ({ rooms }: Props) => {
+const Home = ({ rooms }: Props): JSX.Element => {
   const [roomId, setRoomId] = useState(DEFAULT_ROOM);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setRoomId(e.target.value);
   return (
