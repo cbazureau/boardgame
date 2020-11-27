@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/media-has-caption */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { connect } from 'react-redux';
@@ -47,8 +48,8 @@ const Room = ({
   const [user, setUser] = useState('');
   const [currentMessage, setMessage] = useState('');
   const [currentSid, setSid] = useState('');
-  const remoteVideo: React.MutableRefObject<any> = useRef(null);
-  const localVideo: React.MutableRefObject<any> = useRef(null);
+  const remoteVideo = useRef<HTMLVideoElement>(null);
+  const localVideo = useRef<HTMLVideoElement>(null);
   const socket = useRef(io.connect(`${protocol}://${socketDomain}`));
   const [isMediaActive, setMediaActive] = useState(false);
   const roomId = match.params.room;
@@ -150,7 +151,7 @@ const Room = ({
    */
   const onRemoteStream = (stream: any) => {
     console.log('[Room] onRemoteStream');
-    remoteVideo.current.srcObject = stream;
+    if (remoteVideo.current) remoteVideo.current.srcObject = stream;
     setStatus(STATUS.ESTABLISHED);
   };
 
@@ -160,7 +161,7 @@ const Room = ({
    */
   const onLocalStream = (stream: any) => {
     console.log('[Room] onLocalStream');
-    localVideo.current.srcObject = stream;
+    if (localVideo.current) localVideo.current.srcObject = stream;
   };
 
   const create = async (selectedGame: Game) => {
@@ -240,7 +241,7 @@ const Room = ({
     socket.current.emit('reset');
   };
 
-  console.log('[Room] status', status, isMediaActive);
+  console.log('[Room] status', status);
 
   return (
     <div className="Room">

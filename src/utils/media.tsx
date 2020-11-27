@@ -1,14 +1,12 @@
-let pc: any = null;
-let dc: any = null;
-const remoteStream: Array<any> = [];
-let localStream: any = null;
+let pc: RTCPeerConnection;
+let dc: RTCDataChannel;
+const remoteStream: Array<MediaStream> = [];
+let localStream: MediaStream;
 let currentSocket: any = null;
 let getUserMedia: any = null;
-let currentUser: any = null;
+let currentUser: string;
 
 const CONSTRAINTS = {
-  // audio: true,
-  // video: true
   audio: {
     sampleSize: 16,
     channelCount: 2,
@@ -30,21 +28,14 @@ export const setUserForMedia = (user: string): void => {
 };
 
 const setupDataHandlers = () => {
-  dc.onmessage = (e: any) =>
-    console.log(`[media.setupDataHandlers] data channel : ${JSON.parse(e.data)}`);
+  dc.onmessage = (e: MessageEvent) => console.log(`[dc.onmessage] ${JSON.parse(e.data)}`);
   dc.onclose = () => remoteStream[0].getVideoTracks()[0].stop();
 };
 
 /**
  * init
  */
-export const init = async ({
-  onRemoteStream,
-  onLocalStream,
-}: {
-  onRemoteStream: any;
-  onLocalStream: any;
-}): Promise<void> => {
+export const init = async ({ onRemoteStream }: { onRemoteStream: any }): Promise<void> => {
   console.log('[media.init]');
   // set up the peer connection
   // this is one of Google's public STUN servers
@@ -54,7 +45,7 @@ export const init = async ({
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
   });
   // when our browser gets a candidate, send it to the peer
-  pc.onicecandidate = (e: any) => {
+  pc.onicecandidate = (e: RTCPeerConnectionIceEvent): void => {
     // console.log(e, "onicecandidate");
     if (e.candidate) {
       currentSocket.send({
@@ -65,12 +56,13 @@ export const init = async ({
     }
   };
   // when the other side added a media stream, show it on screen
-  pc.onaddstream = (e: any) => {
-    remoteStream[0] = e.stream;
+  pc.ontrack = (e: RTCTrackEvent): void => {
+    const stream: MediaStream = e.streams[0];
+    remoteStream[0] = stream;
     onRemoteStream(remoteStream[0]);
   };
   // data channel
-  pc.ondatachannel = (e: any) => {
+  pc.ondatachannel = (e: RTCDataChannelEvent): void => {
     dc = e.channel;
     setupDataHandlers();
     dc.send(
@@ -82,7 +74,7 @@ export const init = async ({
     );
   };
   // attach local media to the peer connection
-  localStream.getTracks().forEach((track: any) => pc.addTrack(track, localStream));
+  localStream.getTracks().forEach((track: MediaStreamTrack) => pc.addTrack(track, localStream));
   // call if we were the last to connect (to increase
   // chances that everything is set up properly at both ends)
   if (currentUser === 'host') {
@@ -97,8 +89,8 @@ export const init = async ({
 /**
  * onMessage
  */
-const onMessage = async (message: any) => {
-  // console.log("[media] onMessage", message);
+const onMessage = async (message: any): Promise<void> => {
+  // console.log('[media] onMessage', message);
   if (message.type === 'offer') {
     // set remote description and answer
     pc.setRemoteDescription(new RTCSessionDescription(message));
@@ -142,7 +134,7 @@ export const createLocalStream = async ({
 
   getUserMedia = navigator.mediaDevices.getUserMedia(CONSTRAINTS);
   currentSocket.on('message', onMessage);
-  currentSocket.on('bridge', () => init({ onRemoteStream, onLocalStream }));
+  currentSocket.on('bridge', () => init({ onRemoteStream }));
   localStream = await getUserMedia;
   localStream.getVideoTracks()[0].enabled = isVideoEnabled;
   localStream.getAudioTracks()[0].enabled = isAudioEnabled;

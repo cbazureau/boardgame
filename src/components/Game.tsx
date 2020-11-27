@@ -10,7 +10,7 @@ type Props = {
 };
 
 const Game = ({ game, updateGame, resetGame }: Props): JSX.Element => {
-  const currentLimit: React.MutableRefObject<any> = useRef();
+  const currentLimit = useRef<HTMLDivElement>(null);
 
   const objects = useMemo((): Array<GameObjectWithDef> => getObjectsWithDef(game), [game]);
 

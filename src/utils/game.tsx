@@ -35,8 +35,6 @@ export const prepare = (game: Game): Game => {
     }
     return [...acc, item];
   }, []);
-
-  console.log(magneticGrid);
   return { ...game, magneticGrid };
 };
 
@@ -85,11 +83,9 @@ export const magneticPos = (
  * @param game
  */
 export const onlyOne = (game: Game, currentObject: GameObject): Game => {
-  console.log('onlyOne');
   if (!game.objects || !game.magneticGrid) return game;
   if (game.magneticGrid) {
     const gridPoint = game.magneticGrid.find(m => _isEqual(m.pos, currentObject.pos));
-    console.log('onlyOne', gridPoint);
     if (gridPoint && gridPoint.type.includes(MAGNETIC_TYPES.ONLY_ONE)) {
       return {
         ...game,

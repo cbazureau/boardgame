@@ -10,7 +10,7 @@ type Props = {
 };
 
 const GameObject = ({ def, obj, onChange }: Props): JSX.Element => {
-  const objRef: React.MutableRefObject<any> = useRef();
+  const objRef = useRef<HTMLDivElement>(null);
   const { dragPosition, isDragging } = useDraggable({
     target: def.canMove ? objRef.current : undefined,
     currentPosition: obj.pos,
@@ -27,10 +27,11 @@ const GameObject = ({ def, obj, onChange }: Props): JSX.Element => {
     left: `${left}px`,
     width: `${def.size.width}px`,
     height: `${def.size.height}px`,
-    background: `url("${def.sprite ? def.sprite.src : def.src}") 0 0 no-repeat`,
+    backgroundImage: `url("${def.sprite ? def.sprite.src : def.src}")`,
+    backgroundRepeat: 'no-repeat',
     backgroundPosition: def.inSpritePosition
       ? `-${def.inSpritePosition.left}px -${def.inSpritePosition.top}px`
-      : undefined,
+      : '0 0',
     backgroundSize: def.sprite
       ? `${Math.round((def.sprite.size.width / def.size.width) * 100)}%`
       : '100%',
