@@ -15,26 +15,29 @@ const MAGNETIC_MODE = {
  */
 export const prepare = (game: Game): Game => {
   if (!game.magneticGrid) return game;
-  const magneticGrid = game.magneticGrid.reduce((acc: Array<any>, item: any) => {
-    if (item.mode === MAGNETIC_MODE.GRID) {
-      const gridPoints = [];
-      const { left, top, intervalX, intervalY, nbX, nbY } = item.gridInfo || {};
-      for (let i = 0; i < nbX; i++) {
-        for (let j = 0; j < nbY; j++) {
-          gridPoints.push({
-            type: item.type,
-            forAvailableObjectsType: item.forAvailableObjectsType,
-            pos: {
-              left: left + i * intervalX,
-              top: top + j * intervalY,
-            },
-          });
+  const magneticGrid = game.magneticGrid.reduce(
+    (acc: Array<MagneticGridElement>, item: MagneticGridElement) => {
+      if (item.mode === MAGNETIC_MODE.GRID && item.gridInfo) {
+        const gridPoints = [];
+        const { left, top, intervalX, intervalY, nbX, nbY } = item.gridInfo || {};
+        for (let i = 0; i < nbX; i += 1) {
+          for (let j = 0; j < nbY; j += 1) {
+            gridPoints.push({
+              type: item.type,
+              forAvailableObjectsType: item.forAvailableObjectsType,
+              pos: {
+                left: left + i * intervalX,
+                top: top + j * intervalY,
+              },
+            });
+          }
         }
+        return [...acc, ...gridPoints];
       }
-      return [...acc, ...gridPoints];
-    }
-    return [...acc, item];
-  }, []);
+      return [...acc, item];
+    },
+    [],
+  );
   return { ...game, magneticGrid };
 };
 
@@ -64,8 +67,8 @@ export const magneticPos = (
       const { left: leftAcc, top: topAcc } = acc || {};
       if (!left || !top) return acc;
       if (
-        Math.pow(pos.left - left, 2) + Math.pow(pos.top - top, 2) <
-        Math.pow(pos.left - leftAcc, 2) + Math.pow(pos.top - topAcc, 2)
+        (pos.left - left) ** 2 + (pos.top - top) ** 2 <
+        (pos.left - leftAcc) ** 2 + (pos.top - topAcc) ** 2
       )
         return { left, top };
       return acc;

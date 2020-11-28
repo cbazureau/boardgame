@@ -1,19 +1,14 @@
 import { useCallback, useEffect } from 'react';
 
-const useBeforeUnload = (value: ((evt: BeforeUnloadEvent) => any) | string) => {
-  const handleBeforeunload = useCallback((evt: BeforeUnloadEvent) => {
-    let returnValue;
-    if (typeof value === 'function') {
-      returnValue = value(evt);
-    } else {
-      returnValue = value;
-    }
-    if (returnValue) {
-      evt.preventDefault();
-      evt.returnValue = returnValue;
-    }
-    return returnValue;
-  }, [value]);
+const useBeforeUnload = (value: ((evt: BeforeUnloadEvent) => void) | string): void => {
+  const handleBeforeunload = useCallback(
+    (evt: BeforeUnloadEvent) => {
+      if (typeof value === 'function') {
+        value(evt);
+      }
+    },
+    [value],
+  );
 
   useEffect(() => {
     window.addEventListener('beforeunload', handleBeforeunload);
