@@ -9,11 +9,26 @@ const game: RawGame = {
       mode: 'grid',
       type: ['magnetic', 'onlyOne'],
       forAvailableObjectsType: ['pawn'],
+      distance: 25,
       gridInfo: {
         top: 75,
         left: 75,
         nbX: 8,
         nbY: 8,
+        intervalX: 50,
+        intervalY: 50,
+      },
+    },
+    {
+      mode: 'grid',
+      type: ['magnetic', 'onlyOne'],
+      forAvailableObjectsType: ['pawn'],
+      distance: 25,
+      gridInfo: {
+        top: 75,
+        left: 575,
+        nbX: 2,
+        nbY: 6,
         intervalX: 50,
         intervalY: 50,
       },
@@ -442,6 +457,90 @@ const game: RawGame = {
       pos: {
         top: 75,
         left: 275,
+      },
+    },
+    {
+      type: 'white_king',
+      pos: {
+        top: 75,
+        left: 575,
+      },
+    },
+    {
+      type: 'black_king',
+      pos: {
+        top: 75,
+        left: 625,
+      },
+    },
+    {
+      type: 'white_queen',
+      pos: {
+        top: 125,
+        left: 575,
+      },
+    },
+    {
+      type: 'black_queen',
+      pos: {
+        top: 125,
+        left: 625,
+      },
+    },
+    {
+      type: 'white_tower',
+      pos: {
+        top: 175,
+        left: 575,
+      },
+    },
+    {
+      type: 'black_tower',
+      pos: {
+        top: 175,
+        left: 625,
+      },
+    },
+    {
+      type: 'white_knight',
+      pos: {
+        top: 225,
+        left: 575,
+      },
+    },
+    {
+      type: 'black_knight',
+      pos: {
+        top: 225,
+        left: 625,
+      },
+    },
+    {
+      type: 'white_bishop',
+      pos: {
+        top: 275,
+        left: 575,
+      },
+    },
+    {
+      type: 'black_bishop',
+      pos: {
+        top: 275,
+        left: 625,
+      },
+    },
+    {
+      type: 'white_pawn',
+      pos: {
+        top: 325,
+        left: 575,
+      },
+    },
+    {
+      type: 'black_pawn',
+      pos: {
+        top: 325,
+        left: 625,
       },
     },
   ],

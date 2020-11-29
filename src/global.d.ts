@@ -17,6 +17,7 @@ type Size = {
 type MagneticGridElement = {
   pos?: Pos;
   mode?: string;
+  distance: number;
   type: Array<string>;
   forAvailableObjectsType: Array<string>;
   gridInfo?: {

@@ -39,6 +39,7 @@ export const prepare = (currentGame: RawGame): Game => {
             gridPoints.push({
               type: item.type,
               forAvailableObjectsType: item.forAvailableObjectsType,
+              distance: item.distance,
               pos: {
                 left: left + i * intervalX,
                 top: top + j * intervalY,
@@ -71,24 +72,27 @@ export const magneticPos = ({ game: currentGame, currentObject, pos }: MoveArgs)
       e.forAvailableObjectsType.includes(type) && e.type.includes(MAGNETIC_TYPES.MAGNETIC),
   );
   if (!magneticGridFiltered) return { game: currentGame, currentObject, pos };
-  const fixedPos = magneticGridFiltered.reduce(
+  let fixedPos = magneticGridFiltered.reduce(
     (acc: Pos, item: MagneticGridElement) => {
       const { left, top } = item.pos || {};
       const { left: leftAcc, top: topAcc } = acc || {};
       if (!left || !top) return acc;
       if (
         (pos.left - left) ** 2 + (pos.top - top) ** 2 <
-        (pos.left - leftAcc) ** 2 + (pos.top - topAcc) ** 2
+          (pos.left - leftAcc) ** 2 + (pos.top - topAcc) ** 2 &&
+        (pos.left - left) ** 2 + (pos.top - top) ** 2 < item.distance ** 2
       )
         return { left, top };
       return acc;
     },
     { left: 0, top: 0 },
   );
+  if (fixedPos.left === 0 && fixedPos.top === 0) fixedPos = pos;
 
   const newCurrentObject = _cloneDeep(currentObject);
   game.objects[currentObject.index].pos = fixedPos;
   newCurrentObject.obj.pos = fixedPos;
+  console.log({ fixedPos }, game.objects);
   return { game, currentObject: newCurrentObject, pos: fixedPos };
 };
 
