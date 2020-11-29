@@ -47,7 +47,12 @@ type GameObjectDef = {
 };
 
 type GameObject = {
-  id: number;
+  id: string;
+  type: string;
+  pos: Pos;
+};
+
+type RawGameObject = {
   type: string;
   pos: Pos;
 };
@@ -68,9 +73,24 @@ type Game = {
   players?: {
     nbSlot: number;
   };
-  sprites?: Array<any>;
+  sprites?: Array<Sprite>;
   availableObjects: Array<GameObjectDef>;
   objects: Array<GameObject>;
+};
+
+type RawGame = {
+  name: string;
+  size: {
+    width: number;
+    height: number;
+  };
+  magneticGrid?: Array<MagneticGridElement>;
+  players?: {
+    nbSlot: number;
+  };
+  sprites?: Array<Sprite>;
+  availableObjects: Array<GameObjectDef>;
+  objects: Array<RawGameObject>;
 };
 
 type GameUpdate = {

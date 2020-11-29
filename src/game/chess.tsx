@@ -1,4 +1,4 @@
-const game: Game = {
+const game: RawGame = {
   name: 'Chess',
   size: {
     width: 700,
@@ -214,7 +214,6 @@ const game: Game = {
   ],
   objects: [
     {
-      id: 1,
       type: 'main_board',
       pos: {
         top: 250,
@@ -222,7 +221,6 @@ const game: Game = {
       },
     },
     {
-      id: 2,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -230,7 +228,6 @@ const game: Game = {
       },
     },
     {
-      id: 4,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -238,7 +235,6 @@ const game: Game = {
       },
     },
     {
-      id: 5,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -246,7 +242,6 @@ const game: Game = {
       },
     },
     {
-      id: 6,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -254,7 +249,6 @@ const game: Game = {
       },
     },
     {
-      id: 7,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -262,7 +256,6 @@ const game: Game = {
       },
     },
     {
-      id: 8,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -270,7 +263,6 @@ const game: Game = {
       },
     },
     {
-      id: 9,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -278,7 +270,6 @@ const game: Game = {
       },
     },
     {
-      id: 10,
       type: 'white_pawn',
       pos: {
         top: 125,
@@ -286,7 +277,6 @@ const game: Game = {
       },
     },
     {
-      id: 11,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -294,7 +284,6 @@ const game: Game = {
       },
     },
     {
-      id: 12,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -302,7 +291,6 @@ const game: Game = {
       },
     },
     {
-      id: 13,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -310,7 +298,6 @@ const game: Game = {
       },
     },
     {
-      id: 14,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -318,7 +305,6 @@ const game: Game = {
       },
     },
     {
-      id: 15,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -326,7 +312,6 @@ const game: Game = {
       },
     },
     {
-      id: 16,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -334,7 +319,6 @@ const game: Game = {
       },
     },
     {
-      id: 17,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -342,7 +326,6 @@ const game: Game = {
       },
     },
     {
-      id: 18,
       type: 'black_pawn',
       pos: {
         top: 375,
@@ -350,7 +333,6 @@ const game: Game = {
       },
     },
     {
-      id: 19,
       type: 'black_tower',
       pos: {
         top: 425,
@@ -358,7 +340,6 @@ const game: Game = {
       },
     },
     {
-      id: 20,
       type: 'black_tower',
       pos: {
         top: 425,
@@ -366,7 +347,6 @@ const game: Game = {
       },
     },
     {
-      id: 21,
       type: 'white_tower',
       pos: {
         top: 75,
@@ -374,7 +354,6 @@ const game: Game = {
       },
     },
     {
-      id: 22,
       type: 'white_tower',
       pos: {
         top: 75,
@@ -382,7 +361,6 @@ const game: Game = {
       },
     },
     {
-      id: 23,
       type: 'black_knight',
       pos: {
         top: 425,
@@ -390,7 +368,6 @@ const game: Game = {
       },
     },
     {
-      id: 24,
       type: 'black_knight',
       pos: {
         top: 425,
@@ -398,7 +375,6 @@ const game: Game = {
       },
     },
     {
-      id: 25,
       type: 'white_knight',
       pos: {
         top: 75,
@@ -406,7 +382,6 @@ const game: Game = {
       },
     },
     {
-      id: 26,
       type: 'white_knight',
       pos: {
         top: 75,
@@ -414,7 +389,6 @@ const game: Game = {
       },
     },
     {
-      id: 27,
       type: 'black_bishop',
       pos: {
         top: 425,
@@ -422,7 +396,6 @@ const game: Game = {
       },
     },
     {
-      id: 28,
       type: 'black_bishop',
       pos: {
         top: 425,
@@ -430,7 +403,6 @@ const game: Game = {
       },
     },
     {
-      id: 29,
       type: 'white_bishop',
       pos: {
         top: 75,
@@ -438,7 +410,6 @@ const game: Game = {
       },
     },
     {
-      id: 30,
       type: 'white_bishop',
       pos: {
         top: 75,
@@ -446,7 +417,6 @@ const game: Game = {
       },
     },
     {
-      id: 31,
       type: 'black_king',
       pos: {
         top: 425,
@@ -454,7 +424,6 @@ const game: Game = {
       },
     },
     {
-      id: 32,
       type: 'white_king',
       pos: {
         top: 75,
@@ -462,7 +431,6 @@ const game: Game = {
       },
     },
     {
-      id: 33,
       type: 'black_queen',
       pos: {
         top: 425,
@@ -470,7 +438,6 @@ const game: Game = {
       },
     },
     {
-      id: 34,
       type: 'white_queen',
       pos: {
         top: 75,

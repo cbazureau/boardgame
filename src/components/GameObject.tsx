@@ -6,7 +6,7 @@ import './GameObject.css';
 type Props = {
   obj: GameObject;
   def: GameObjectDef;
-  onChange: (currentObjectId: number, pos: Pos) => void;
+  onChange: (currentObjectId: string, pos: Pos) => void;
 };
 
 const GameObject = ({ def, obj, onChange }: Props): JSX.Element => {

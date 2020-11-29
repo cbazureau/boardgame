@@ -1,5 +1,6 @@
 import _isEqual from 'lodash/isEqual';
 import _cloneDeep from 'lodash/cloneDeep';
+import { v4 as uuidv4 } from 'uuid';
 
 const MAGNETIC_TYPES = {
   MAGNETIC: 'magnetic',
@@ -20,7 +21,13 @@ const movePipe = (...fns: Array<(args: MoveArgs) => MoveArgs>) => (x: MoveArgs):
  * prepare
  * @param {*} game
  */
-export const prepare = (game: Game): Game => {
+export const prepare = (currentGame: RawGame): Game => {
+  // Populate objId
+  const game: Game = {
+    ..._cloneDeep(currentGame),
+    objects: currentGame.objects.map((o: RawGameObject): GameObject => ({ ...o, id: uuidv4() })),
+  };
+
   if (!game.magneticGrid) return game;
   const magneticGrid = game.magneticGrid.reduce(
     (acc: Array<MagneticGridElement>, item: MagneticGridElement) => {
