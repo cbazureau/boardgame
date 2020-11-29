@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 
+let currentTarget: HTMLElement | null = null;
+
 const eventsFor = {
   touch: {
     start: 'touchstart',
@@ -25,8 +27,13 @@ const handleDragStartStop = (
 ) => (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
   e = e || window.event;
   e.preventDefault();
+  if (currentTarget && currentTarget !== target) return;
   setIsDragging(!isDragging);
-  if (!isDragging) return;
+  if (!isDragging) {
+    currentTarget = target;
+    return;
+  }
+  currentTarget = null;
   // set the element's new position:
   const pos: Pos = {
     top: e.clientY,
