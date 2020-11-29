@@ -90,3 +90,9 @@ type RTCstore = {
 type Store = {
   rtc: RTCstore;
 };
+
+type MoveArgs = {
+  game: Game;
+  currentObject: GameObjectWithDef;
+  pos: Pos;
+};

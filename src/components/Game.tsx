@@ -22,7 +22,7 @@ const Game = ({ game, updateGame, resetGame }: Props): JSX.Element => {
   const onChange = (currentObjId: number, pos: Pos) => {
     const currentObject = objects.find(o => o.obj.id === currentObjId);
     if (!currentObject) return;
-    const newGame = moveObject(game, currentObject, pos);
+    const newGame = moveObject({ game, currentObject, pos });
     updateGame({ game: { objects: newGame.objects } });
   };
 

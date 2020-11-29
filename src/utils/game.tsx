@@ -10,6 +10,13 @@ const MAGNETIC_MODE = {
 };
 
 /**
+ * movePipe
+ * @param fns
+ */
+const movePipe = (...fns: Array<(args: MoveArgs) => MoveArgs>) => (x: MoveArgs): MoveArgs =>
+  fns.reduce((v, f) => f(v), x);
+
+/**
  * prepare
  * @param {*} game
  */
@@ -43,24 +50,20 @@ export const prepare = (game: Game): Game => {
 
 /**
  * magneticPos
- * @param {*} pos
- * @param {*} magneticGrid
- * @param {*} type
+ * @param game
+ * @param currentObject
+ * @param pos
  */
-export const magneticPos = (
-  currentGame: Game,
-  currentObject: GameObjectWithDef,
-  pos: Pos,
-): Game => {
+export const magneticPos = ({ game: currentGame, currentObject, pos }: MoveArgs): MoveArgs => {
   const game = _cloneDeep(currentGame);
   const { magneticGrid } = game;
   const { type } = currentObject.def;
-  if (!magneticGrid || !type) return game;
+  if (!magneticGrid || !type) return { game: currentGame, currentObject, pos };
   const magneticGridFiltered = magneticGrid.filter(
     (e: MagneticGridElement) =>
       e.forAvailableObjectsType.includes(type) && e.type.includes(MAGNETIC_TYPES.MAGNETIC),
   );
-  if (!magneticGridFiltered) return game;
+  if (!magneticGridFiltered) return { game: currentGame, currentObject, pos };
   const fixedPos = magneticGridFiltered.reduce(
     (acc: Pos, item: MagneticGridElement) => {
       const { left, top } = item.pos || {};
@@ -76,30 +79,34 @@ export const magneticPos = (
     { left: 0, top: 0 },
   );
 
+  const newCurrentObject = _cloneDeep(currentObject);
   game.objects[currentObject.index].pos = fixedPos;
-  return game;
+  newCurrentObject.obj.pos = fixedPos;
+  return { game, currentObject: newCurrentObject, pos: fixedPos };
 };
 
 /**
  * onlyOne
- * @param index
  * @param game
+ * @param currentObject
+ * @param pos
  */
-export const onlyOne = (game: Game, currentObject: GameObject): Game => {
-  if (!game.objects || !game.magneticGrid) return game;
-  if (game.magneticGrid) {
-    const gridPoint = game.magneticGrid.find(m => _isEqual(m.pos, currentObject.pos));
-    if (gridPoint && gridPoint.type.includes(MAGNETIC_TYPES.ONLY_ONE)) {
-      return {
+export const onlyOne = ({ game: currentGame, currentObject, pos }: MoveArgs): MoveArgs => {
+  const game = _cloneDeep(currentGame);
+  if (!game.objects || !game.magneticGrid) return { game: currentGame, currentObject, pos };
+  const gridPoint = game.magneticGrid.find(m => _isEqual(m.pos, pos));
+  if (gridPoint && gridPoint.type.includes(MAGNETIC_TYPES.ONLY_ONE)) {
+    return {
+      game: {
         ...game,
-        objects: game.objects.filter(
-          o => !_isEqual(o.pos, currentObject.pos) || o.id === currentObject.id,
-        ),
-      };
-    }
+        objects: game.objects.filter(o => !_isEqual(o.pos, pos) || o.id === currentObject.obj.id),
+      },
+      currentObject,
+      pos,
+    };
   }
 
-  return game;
+  return { game: currentGame, currentObject, pos };
 };
 
 /**
@@ -108,13 +115,9 @@ export const onlyOne = (game: Game, currentObject: GameObject): Game => {
  * @param currentObject
  * @param pos
  */
-export const moveObject = (game: Game, currentObject: GameObjectWithDef, pos: Pos): Game => {
+export const moveObject = ({ game, currentObject, pos }: MoveArgs): Game => {
   if (currentObject && currentObject.index) {
-    let newGame = _cloneDeep(game);
-    // Magnetic
-    newGame = magneticPos(newGame, currentObject, pos);
-    // onlyOne
-    newGame = onlyOne(newGame, newGame.objects[currentObject.index]);
+    const { game: newGame } = movePipe(magneticPos, onlyOne)({ game, currentObject, pos });
     return newGame;
   }
   return game;
