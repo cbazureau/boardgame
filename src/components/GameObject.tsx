@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useDraggable from '../utils/useDraggable';
 
 import './GameObject.css';
@@ -11,6 +11,11 @@ type Props = {
 
 const GameObject = ({ def, obj, onChange }: Props): JSX.Element => {
   const objRef = useRef<HTMLDivElement>(null);
+  const [, setMounted] = useState<boolean>(false);
+  // Force first refresh to get objRef
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const { dragPosition, isDragging } = useDraggable({
     target: def.canMove ? objRef.current : undefined,
     currentPosition: obj.pos,
