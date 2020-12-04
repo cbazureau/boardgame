@@ -1,4 +1,3 @@
-import _isEqual from 'lodash/isEqual';
 import _cloneDeep from 'lodash/cloneDeep';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -155,12 +154,12 @@ const magneticPosMove = ({ game: currentGame, currentObject, pos }: MoveArgs): M
 const onlyOneMove = ({ game: currentGame, currentObject, pos }: MoveArgs): MoveArgs => {
   const game = _cloneDeep(currentGame);
   if (!game.objects || !game.magneticGrid) return { game: currentGame, currentObject, pos };
-  const gridPoint = game.magneticGrid.find(m => _isEqual(m.pos, pos));
+  const gridPoint = game.magneticGrid.find(m => samePos(m.pos, pos));
   if (gridPoint && gridPoint.type.includes(MAGNETIC_TYPES.ONLY_ONE)) {
     return {
       game: {
         ...game,
-        objects: game.objects.filter(o => !_isEqual(o.pos, pos) || o.id === currentObject.obj.id),
+        objects: game.objects.filter(o => !samePos(o.pos, pos) || o.id === currentObject.obj.id),
       },
       currentObject,
       pos,

@@ -26,6 +26,7 @@ const GameObject = ({ def, obj, onChange }: Props): JSX.Element => {
   let cursor = 'auto';
   if (def.canMove) cursor = isDragging ? 'grab' : 'pointer';
   const styles = {
+    zIndex: isDragging ? 2 : undefined,
     backgroundColor: isDragging ? 'red' : 'transparent',
     cursor,
     top: `${top}px`,
