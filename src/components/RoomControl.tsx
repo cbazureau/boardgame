@@ -1,6 +1,6 @@
 import React from 'react';
 import './RoomControls.css';
-import STATUS from '../utils/status';
+import { RTC_STATUS } from '../utils/status';
 
 type Props = {
   toggleVideo: () => void;
@@ -8,7 +8,7 @@ type Props = {
   isAudioEnabled: boolean;
   isVideoEnabled: boolean;
   handleHangup: () => void;
-  status: string;
+  rtcStatus: string;
 };
 
 const RoomControls = ({
@@ -17,7 +17,7 @@ const RoomControls = ({
   isAudioEnabled,
   isVideoEnabled,
   handleHangup,
-  status,
+  rtcStatus,
 }: Props): JSX.Element => (
   <div className="RoomControls">
     <button onClick={toggleAudio} className="RoomControls__control" type="button">
@@ -56,7 +56,7 @@ const RoomControls = ({
         )}
       </svg>
     </button>
-    {status === STATUS.ESTABLISHED && (
+    {rtcStatus === RTC_STATUS.ESTABLISHED && (
       <button onClick={handleHangup} className="RoomControls__control" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" className="svg">
           <path

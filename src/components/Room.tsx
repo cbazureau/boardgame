@@ -15,7 +15,10 @@ import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import RoomControls from './RoomControl';
 import Game from './Game';
-import STATUS from '../utils/status';
+import { USER_STATUS, RTC_STATUS } from '../utils/status';
+
+// For debugging purpose
+const ACTIVATE_RTC = false;
 
 type Props = {
   match: any;
@@ -44,7 +47,8 @@ const Room = ({
     window.location.host === 'localhost:3000' ? 'localhost:5000' : 'sandboard-server.herokuapp.com';
   const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
 
-  const [status, setStatus] = useState(STATUS.GETTING_ROOM);
+  const [status, setStatus] = useState(USER_STATUS.GETTING_ROOM);
+  const [rtcStatus, setRTCStatus] = useState(RTC_STATUS.OFF);
   const [user, setUser] = useState('');
   const [currentMessage, setMessage] = useState('');
   const [currentSid, setSid] = useState('');
@@ -56,7 +60,7 @@ const Room = ({
 
   const onHangUp = () => {
     console.log('[Room] onHangUp');
-    setStatus(STATUS.CREATE);
+    setRTCStatus(RTC_STATUS.CREATE);
     hangup();
     socket.current.emit('leave');
     setUser('guest');
@@ -74,7 +78,7 @@ const Room = ({
     };
     console.log('[Room] send', authInfo);
     socket.current.emit('auth', authInfo);
-    setStatus(STATUS.CONNECTING);
+    setRTCStatus(RTC_STATUS.CONNECTING);
   }, [currentSid, isAudioEnabled, isVideoEnabled]);
 
   const beforeUnload = useCallback(() => {
@@ -93,7 +97,7 @@ const Room = ({
   }, [user, isMediaActive]);
 
   useEffect(() => {
-    if (status === STATUS.GETTING_ROOM) {
+    if (status === USER_STATUS.GETTING_ROOM) {
       const onApprove = ({ message, sid }: { message: any; sid: any }) => {
         console.log('[Room] onApprove', message, sid);
         setMessage(message);
@@ -103,34 +107,39 @@ const Room = ({
 
         // Auto accept
         socket.current.emit('accept', sid);
-        setStatus(STATUS.CONNECTING);
+        setRTCStatus(RTC_STATUS.CONNECTING);
       };
       const onJoin = () => {
         console.log('[Room] onJoin');
-        setStatus(STATUS.JOIN);
+        setStatus(USER_STATUS.READY);
         setUser('guest');
+        if (!ACTIVATE_RTC) return;
+        setRTCStatus(RTC_STATUS.JOIN);
 
         // Auto request to join
         send();
       };
       const onCreate = () => {
         console.log('[Room] onCreate');
-        setStatus(STATUS.CREATE);
+        setStatus(USER_STATUS.READY);
         setUser('host');
+        if (!ACTIVATE_RTC) return;
+        setRTCStatus(RTC_STATUS.CREATE);
       };
       const onFull = () => {
         console.log('[Room] onFull');
-        setStatus(STATUS.FULL);
+        setRTCStatus(RTC_STATUS.FULL);
       };
 
       const onEnterLobby = ({ currentUser }: { currentUser: User }) => {
         console.log('[Room] onEnterLobby', { currentUser });
-        setStatus(STATUS.IN_LOBBY);
+        setStatus(USER_STATUS.IN_LOBBY);
       };
 
       const onRemoteHangup = () => {
-        setStatus(STATUS.CREATE);
         setUser('host');
+        if (!ACTIVATE_RTC) return;
+        setRTCStatus(RTC_STATUS.CREATE);
       };
       socket.current.on('hangup', onRemoteHangup);
       socket.current.on('enter-lobby', onEnterLobby);
@@ -152,7 +161,7 @@ const Room = ({
   const onRemoteStream = (stream: any) => {
     console.log('[Room] onRemoteStream');
     if (remoteVideo.current) remoteVideo.current.srcObject = stream;
-    setStatus(STATUS.ESTABLISHED);
+    setRTCStatus(RTC_STATUS.ESTABLISHED);
   };
 
   /**
@@ -166,14 +175,16 @@ const Room = ({
 
   const create = async (selectedGame: Game) => {
     console.log('[Room] createLocalStream');
-    await createLocalStream({
-      socket: socket.current,
-      isVideoEnabled,
-      isAudioEnabled,
-      onLocalStream,
-      onRemoteStream,
-      user,
-    });
+    if (ACTIVATE_RTC) {
+      await createLocalStream({
+        socket: socket.current,
+        isVideoEnabled,
+        isAudioEnabled,
+        onLocalStream,
+        onRemoteStream,
+        user,
+      });
+    }
     setMediaActive(true);
     socket.current.emit('welcome-game', { userName: 'Bob', game: selectedGame });
   };
@@ -189,7 +200,7 @@ const Room = ({
     } else {
       socket.current.emit('reject', currentSid);
     }
-    setStatus(STATUS.CONNECTING);
+    setRTCStatus(RTC_STATUS.CONNECTING);
   };
 
   /**
@@ -241,7 +252,7 @@ const Room = ({
     socket.current.emit('reset');
   };
 
-  console.log('[Room] status', status);
+  console.log('[Room] status', status, rtcStatus);
 
   return (
     <div className="Room">
@@ -249,23 +260,28 @@ const Room = ({
         {!!game && <Game game={game} updateGame={updateSocketGame} resetGame={resetGame} />}
       </div>
 
-      <div className={`Room__videos ${status === STATUS.ESTABLISHED ? 'is-established' : ''}`}>
-        <div className="Room__videobox">
-          <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
+      {ACTIVATE_RTC && (
+        <div
+          className={`Room__videos ${rtcStatus === RTC_STATUS.ESTABLISHED ? 'is-established' : ''}`}
+        >
+          <div className="Room__videobox">
+            <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
+          </div>
+          <div className="Room__videobox">
+            <video className="Room__video is-local" ref={localVideo} autoPlay muted />
+            <RoomControls
+              rtcStatus={rtcStatus}
+              isAudioEnabled={isAudioEnabled}
+              isVideoEnabled={isVideoEnabled}
+              toggleVideo={onToggleVideo}
+              toggleAudio={onToggleAudio}
+              handleHangup={handleHangup}
+            />
+          </div>
         </div>
-        <div className="Room__videobox">
-          <video className="Room__video is-local" ref={localVideo} autoPlay muted />
-          <RoomControls
-            status={status}
-            isAudioEnabled={isAudioEnabled}
-            isVideoEnabled={isVideoEnabled}
-            toggleVideo={onToggleVideo}
-            toggleAudio={onToggleAudio}
-            handleHangup={handleHangup}
-          />
-        </div>
-      </div>
+      )}
       <Communication
+        rtcStatus={rtcStatus}
         status={status}
         message={currentMessage}
         send={send}

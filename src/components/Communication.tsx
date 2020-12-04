@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Communication.css';
-import STATUS from '../utils/status';
+import { RTC_STATUS, USER_STATUS } from '../utils/status';
 
 import game from '../game/chess';
 import { prepare } from '../utils/game';
@@ -15,6 +15,7 @@ type Props = {
     returnStatus: string,
   ) => (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   message: string;
+  rtcStatus: string;
   status: string;
 };
 
@@ -23,11 +24,13 @@ const Communication = ({
   sendInfos,
   handleInvitation,
   message,
+  rtcStatus,
   status,
 }: Props): JSX.Element | null =>
-  [STATUS.JOIN, STATUS.APPROVE, STATUS.FULL, STATUS.IN_LOBBY].includes(status) ? (
+  [RTC_STATUS.JOIN, RTC_STATUS.APPROVE, RTC_STATUS.FULL].includes(rtcStatus) ||
+  [USER_STATUS.IN_LOBBY].includes(status) ? (
     <div className="Communication">
-      {status === STATUS.JOIN && (
+      {rtcStatus === RTC_STATUS.JOIN && (
         <div className="Communication__box">
           <p>Send an invitation to join the room.</p>
           <button onClick={send} type="button" className="primary-button">
@@ -35,7 +38,7 @@ const Communication = ({
           </button>
         </div>
       )}
-      {status === STATUS.IN_LOBBY && (
+      {status === USER_STATUS.IN_LOBBY && (
         <div className="Communication__box">
           <p>Welcome to this room</p>
           <button onClick={() => sendInfos(chessGame)} type="button" className="primary-button">
@@ -43,7 +46,7 @@ const Communication = ({
           </button>
         </div>
       )}
-      {status === STATUS.APPROVE && (
+      {rtcStatus === RTC_STATUS.APPROVE && (
         <div className="Communication__box">
           <p>A peer has sent you a message to join the room:</p>
           <div>{message}</div>
@@ -65,7 +68,7 @@ const Communication = ({
           </button>
         </div>
       )}
-      {status === STATUS.FULL && (
+      {rtcStatus === RTC_STATUS.FULL && (
         <div className="Communication__box">
           <p>Please, try another room!</p>
           <Link className="primary-button" to="/">
