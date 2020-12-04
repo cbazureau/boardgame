@@ -4,7 +4,8 @@ const game: RawGame = {
     width: 700,
     height: 500,
   },
-  magneticGrid: [
+  magneticGrid: [],
+  setup: [
     {
       mode: 'grid',
       type: ['magnetic', 'onlyOne'],
@@ -21,7 +22,7 @@ const game: RawGame = {
     },
     {
       mode: 'grid',
-      type: ['magnetic', 'onlyOne'],
+      type: ['magnetic', 'onlyOne', 'bank'],
       forAvailableObjectsType: ['pawn'],
       distance: 25,
       gridInfo: {

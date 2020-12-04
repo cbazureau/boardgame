@@ -16,18 +16,10 @@ type Size = {
 
 type MagneticGridElement = {
   pos?: Pos;
-  mode?: string;
   distance: number;
   type: Array<string>;
   forAvailableObjectsType: Array<string>;
-  gridInfo?: {
-    left: number;
-    top: number;
-    intervalX: number;
-    intervalY: number;
-    nbX: number;
-    nbY: number;
-  };
+  bankObjType?: string;
 };
 
 type Sprite = {
@@ -79,8 +71,25 @@ type Game = {
   objects: Array<GameObject>;
 };
 
+type Setup = {
+  pos?: Pos;
+  mode?: string;
+  distance: number;
+  type: Array<string>;
+  forAvailableObjectsType: Array<string>;
+  gridInfo?: {
+    left: number;
+    top: number;
+    intervalX: number;
+    intervalY: number;
+    nbX: number;
+    nbY: number;
+  };
+};
+
 type RawGame = {
   name: string;
+  setup?: Array<Setup>;
   size: {
     width: number;
     height: number;
