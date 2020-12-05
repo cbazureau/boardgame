@@ -110,11 +110,11 @@ type GameUpdate = {
 type Room = string;
 
 type RTCstore = {
+  proposedGame: Game | null;
   game?: Game;
   users: Array<User>;
   isVideoEnabled: boolean;
   isAudioEnabled: boolean;
-  rooms: Array<Room>;
 };
 
 type Store = {

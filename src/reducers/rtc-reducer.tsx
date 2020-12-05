@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 
 const initalState: RTCstore = {
   game: undefined,
-  rooms: [],
+  proposedGame: null,
   users: [],
   isVideoEnabled: true,
   isAudioEnabled: true,
@@ -10,6 +10,7 @@ const initalState: RTCstore = {
 
 type ActionType = {
   type: string;
+  proposedGame?: Game | null;
   game?: GameUpdate | Game;
   users?: Array<User>;
   room?: Room;
@@ -31,9 +32,8 @@ const rtcReducer = (state: RTCstore = initalState, action: ActionType): RTCstore
             : undefined,
         users: action.users || state.users,
       };
-    case 'ADD_ROOM':
-      if (!action.room || state.rooms.includes(action.room)) return state;
-      return { ...state, rooms: [...state.rooms, action.room] };
+    case 'SET_PROPOSED_GAME':
+      return { ...state, proposedGame: action.proposedGame || null };
     case 'SET_VIDEO':
       return { ...state, isVideoEnabled: !!action.isVideoEnabled };
     case 'SET_AUDIO':

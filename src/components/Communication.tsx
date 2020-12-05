@@ -3,13 +3,8 @@ import { Link } from 'react-router-dom';
 import './Communication.css';
 import { RTC_STATUS, USER_STATUS } from '../utils/status';
 
-import game from '../game/chess';
-import { prepare } from '../utils/game';
-
-const chessGame = prepare(game);
-
 type Props = {
-  sendInfos: (selectedGame: Game) => void;
+  sendInfos: () => void;
   send: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   handleInvitation: (
     returnStatus: string,
@@ -41,7 +36,7 @@ const Communication = ({
       {status === USER_STATUS.IN_LOBBY && (
         <div className="Communication__box">
           <p>Welcome to this room</p>
-          <button onClick={() => sendInfos(chessGame)} type="button" className="primary-button">
+          <button onClick={sendInfos} type="button" className="primary-button">
             Send Infos
           </button>
         </div>

@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
 import { connect } from 'react-redux';
 import Communication from './Communication';
@@ -21,6 +22,7 @@ import { USER_STATUS, RTC_STATUS } from '../utils/status';
 const ACTIVATE_RTC = false;
 
 type Props = {
+  proposedGame: Game | null;
   match: any;
   isAudioEnabled: boolean;
   isVideoEnabled: boolean;
@@ -42,6 +44,7 @@ const Room = ({
   setAudio,
   game,
   updateGame,
+  proposedGame,
 }: Props): JSX.Element => {
   const socketDomain =
     window.location.host === 'localhost:3000' ? 'localhost:5000' : 'sandboard-server.herokuapp.com';
@@ -150,9 +153,9 @@ const Room = ({
       socket.current.on('update', updateGame);
 
       // Emit a welcome to enter in the Lobby
-      socket.current.emit('welcome-lobby', { roomId });
+      socket.current.emit('welcome-lobby', { roomId, proposedGame });
     }
-  }, [roomId, send, status, updateGame]);
+  }, [roomId, send, status, updateGame, proposedGame]);
 
   /**
    * onRemoteStream
@@ -173,7 +176,7 @@ const Room = ({
     if (localVideo.current) localVideo.current.srcObject = stream;
   };
 
-  const create = async (selectedGame: Game) => {
+  const create = async () => {
     console.log('[Room] createLocalStream');
     if (ACTIVATE_RTC) {
       await createLocalStream({
@@ -186,7 +189,7 @@ const Room = ({
       });
     }
     setMediaActive(true);
-    socket.current.emit('welcome-game', { userName: 'Bob', game: selectedGame });
+    socket.current.emit('welcome-game', { userName: 'Bob' });
   };
 
   /**
@@ -232,9 +235,9 @@ const Room = ({
   /**
    * handleHangup
    */
-  const sendInfos = (selectedGame: Game) => {
+  const sendInfos = () => {
     console.log('[Room] sendInfos');
-    if (!isMediaActive) create(selectedGame);
+    if (!isMediaActive && (proposedGame || game)) create();
   };
 
   /**
@@ -253,6 +256,14 @@ const Room = ({
   };
 
   console.log('[Room] status', status, rtcStatus);
+
+  if (!proposedGame && !game) {
+    return (
+      <Link className="Room__button" to="/">
+        Go
+      </Link>
+    );
+  }
 
   return (
     <div className="Room">
@@ -292,11 +303,13 @@ const Room = ({
   );
 };
 
-const mapStateToProps = ({ rtc: { game, rooms, isVideoEnabled, isAudioEnabled } }: Store) => ({
+const mapStateToProps = ({
+  rtc: { game, isVideoEnabled, isAudioEnabled, proposedGame },
+}: Store) => ({
   game,
-  rooms,
   isVideoEnabled,
   isAudioEnabled,
+  proposedGame,
 });
 const mapDispatchToProps = () => ({
   updateGame: ({ game, users }: { game?: GameUpdate | Game; users?: Array<User> }) =>
