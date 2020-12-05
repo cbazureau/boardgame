@@ -189,7 +189,7 @@ const Room = ({
       });
     }
     setMediaActive(true);
-    socket.current.emit('welcome-game', { userName: 'Bob' });
+    socket.current.emit('welcome-game', { username: 'Bob' });
   };
 
   /**
