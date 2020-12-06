@@ -1,7 +1,7 @@
 export const USER_STATUS = {
   GETTING_ROOM: 'GETTING_ROOM',
   IN_LOBBY: 'IN_LOBBY',
-  READY: 'READY',
+  IN_GAME: 'IN_GAME',
 };
 
 export const RTC_STATUS = {
