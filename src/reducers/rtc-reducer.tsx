@@ -21,6 +21,7 @@ type ActionType = {
 const rtcReducer = (state: RTCstore = initalState, action: ActionType): RTCstore => {
   switch (action.type) {
     case 'UPDATE_GAME':
+      console.log('UPDATE_GAME', action.game);
       return {
         ...state,
         game:
