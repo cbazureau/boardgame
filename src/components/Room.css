@@ -20,3 +20,16 @@
   align-items: center;
   min-height: 100vh;
 }
+
+.Room__lobby__username {
+  border: none;
+  border-bottom: solid 1px var(--gray);
+  font-size: 2rem;
+  background-color: transparent;
+  color: var(--gray);
+  width: 100%;
+  max-width: 200px;
+  display: block;
+  padding: 8px 2px;
+  margin-bottom: 32px;
+}

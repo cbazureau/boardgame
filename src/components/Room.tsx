@@ -10,6 +10,7 @@ import Game from './Game';
 import { USER_STATUS } from '../utils/status';
 import RTC from './RTC/RTC';
 import Button from './Button';
+import Users from './Users';
 
 type Props = {
   proposedGame: Game | null;
@@ -37,6 +38,7 @@ const Room = ({
   const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
 
   const [status, setStatus] = useState(USER_STATUS.GETTING_ROOM);
+  const [username, setUsername] = useState('Bob');
   const socket = useRef(io.connect(`${protocol}://${socketDomain}`));
   const roomId = match.params.room;
 
@@ -71,9 +73,9 @@ const Room = ({
    * handleHangup
    */
   const tryEnterGame = () => {
-    console.log('[Room] tryEnterGame');
+    console.log('[Room] tryEnterGame', username);
     if (proposedGame || game) {
-      socket.current.emit('welcome-game', { username: 'Bob' });
+      socket.current.emit('welcome-game', { username });
     }
   };
 
@@ -115,7 +117,12 @@ const Room = ({
       {status === USER_STATUS.IN_LOBBY && (
         <div className="Room__lobby">
           <p>Welcome to this room</p>
-          <pre>{JSON.stringify(users, null, 2)}</pre>
+          <Users users={users} />
+          <input
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            className="Room__lobby__username"
+          />
           <Button onClick={tryEnterGame}>Enter Game</Button>
         </div>
       )}

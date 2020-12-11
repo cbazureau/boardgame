@@ -1,0 +1,14 @@
+.Users {
+  display: flex;
+  margin: 32px 0;
+}
+
+.Users__user {
+  width: 150px;
+  height: 150px;
+  font-size: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

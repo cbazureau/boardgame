@@ -14,6 +14,7 @@ import {
 import RoomControls from '../RoomControl';
 import { RTC_STATUS } from '../../utils/status';
 import Button from '../Button';
+import Users from '../Users';
 import './RTC.css';
 
 type Props = {
@@ -221,7 +222,9 @@ const RTC = ({
         'is-local-ready': rtcStatus !== RTC_STATUS.OFF,
       })}
     >
-      <pre className="RTC_users">{JSON.stringify(users, null, 2)}</pre>
+      <div className="RTC_users">
+        <Users users={users} />
+      </div>
       {rtcStatus === RTC_STATUS.OFF && (
         <div className="RTC__box">
           <p>Videochat</p>

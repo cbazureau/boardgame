@@ -6,7 +6,8 @@ type Pos = {
 type User = {
   id: string;
   isHost?: boolean;
-  status: string;
+  serverStatus: string;
+  username: string;
 };
 
 type Size = {
