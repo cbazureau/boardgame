@@ -13,7 +13,7 @@ type Props = {
 const Users = ({ users }: Props): JSX.Element => (
   <div className="Users">
     {users.map(user => (
-      <div className="Users__user">
+      <div className="Users__user" key={user.id}>
         <UserIcon />
         <span>{user.serverStatus}</span>
         <span>{user.username || '...'}</span>

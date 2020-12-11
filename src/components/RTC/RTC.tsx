@@ -121,8 +121,9 @@ const RTC = ({
       };
 
       const onRemoteHangup = () => {
+        console.log('[RTC] onRemoteHangup');
         setUser('host');
-        if (rtcStatus !== RTC_STATUS.OFF) setRTCStatus(RTC_STATUS.CREATE);
+        setRTCStatus(RTC_STATUS.CREATE);
       };
       socket.current.on('hangup', onRemoteHangup);
       socket.current.on('create', onCreate);
