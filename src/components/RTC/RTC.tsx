@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
+import classnames from 'classnames';
 import store from '../../store';
 import useBeforeUnload from '../../utils/useBeforeUnload';
 import {
@@ -12,6 +13,8 @@ import {
 } from '../../utils/media';
 import RoomControls from '../RoomControl';
 import { RTC_STATUS } from '../../utils/status';
+import Button from '../Button';
+import './RTC.css';
 
 type Props = {
   socket: any;
@@ -20,6 +23,7 @@ type Props = {
   setVideo: (val: boolean) => void;
   setAudio: (val: boolean) => void;
   onHangUp: () => void;
+  users: Array<User>;
 };
 
 /**
@@ -33,6 +37,7 @@ const RTC = ({
   setAudio,
   socket,
   onHangUp: onGameHangUp,
+  users,
 }: Props): JSX.Element => {
   const [rtcStatus, setRTCStatus] = useState(RTC_STATUS.OFF);
   const [user, setUser] = useState<string>('');
@@ -210,25 +215,27 @@ const RTC = ({
   console.log('[RTC] status', rtcStatus);
 
   return (
-    <div className={`Room__videos ${rtcStatus === RTC_STATUS.ESTABLISHED ? 'is-established' : ''}`}>
+    <div
+      className={classnames('RTC', {
+        'is-established': rtcStatus === RTC_STATUS.ESTABLISHED,
+        'is-local-ready': rtcStatus !== RTC_STATUS.OFF,
+      })}
+    >
+      <pre className="RTC_users">{JSON.stringify(users, null, 2)}</pre>
       {rtcStatus === RTC_STATUS.OFF && (
-        <div className="Communication__box">
-          <p>Start videochat</p>
-          <button onClick={sendChat} type="button" className="primary-button">
-            Send Infos
-          </button>
+        <div className="RTC__box">
+          <p>Videochat</p>
+          <Button onClick={sendChat}>Start</Button>
         </div>
       )}
       {rtcStatus === RTC_STATUS.JOIN && (
-        <div className="Communication__box">
+        <div className="RTC__box">
           <p>Send an invitation to join the room.</p>
-          <button onClick={send} type="button" className="primary-button">
-            Send
-          </button>
+          <Button onClick={send}>Send</Button>
         </div>
       )}
       {rtcStatus === RTC_STATUS.APPROVE && (
-        <div className="Communication__box">
+        <div className="RTC__box">
           <p>A peer has sent you a message to join the room:</p>
           <div>{currentMessage}</div>
           <button
@@ -250,11 +257,11 @@ const RTC = ({
         </div>
       )}
       {rtcStatus === RTC_STATUS.FULL && <div>FULL</div>}
-      <div className="Room__videobox">
-        <video className="Room__video is-remote" ref={remoteVideo} autoPlay />
+      <div className="RTC__videobox">
+        <video className="RTC__video is-remote" ref={remoteVideo} autoPlay />
       </div>
-      <div className="Room__videobox">
-        <video className="Room__video is-local" ref={localVideo} autoPlay muted />
+      <div className="RTC__videobox">
+        <video className="RTC__video is-local" ref={localVideo} autoPlay muted />
         <RoomControls
           rtcStatus={rtcStatus}
           isAudioEnabled={isAudioEnabled}
@@ -268,9 +275,10 @@ const RTC = ({
   );
 };
 
-const mapStateToProps = ({ rtc: { isVideoEnabled, isAudioEnabled } }: Store) => ({
+const mapStateToProps = ({ rtc: { isVideoEnabled, isAudioEnabled, users } }: Store) => ({
   isVideoEnabled,
   isAudioEnabled,
+  users,
 });
 const mapDispatchToProps = () => ({
   setVideo: (enabled: boolean) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),

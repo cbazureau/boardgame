@@ -9,30 +9,14 @@
   background-color: white;
 }
 
-.Room__videos {
-  align-items: center;
-  justify-content: flex-start;
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-}
-.Room__videobox {
+.Room__lobby,
+.Room__unknown {
+  flex: 1;
+  background-color: white;
   position: relative;
-}
-.Room__video {
-  display: block;
-  height: auto;
-  width: 120px;
-  height: 120px;
-  border: 2px solid green;
-  margin: 8px 8px 8px 64px;
-
-  object-fit: cover;
-  border-radius: 50%;
-}
-.Room__video.is-local {
-  filter: grayscale(0.9);
-}
-.Room__videos:not(.is-established) .Room__video.is-remote {
-  display: none;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import io from 'socket.io-client';
 import { connect } from 'react-redux';
 import store from '../store';
@@ -9,11 +9,14 @@ import './Room.css';
 import Game from './Game';
 import { USER_STATUS } from '../utils/status';
 import RTC from './RTC/RTC';
+import Button from './Button';
 
 type Props = {
   proposedGame: Game | null;
   match: any;
+  history: any;
   game: Game | void;
+  users: Array<User>;
   updateGame: (updateInfos: { game?: GameUpdate | Game; users?: Array<User> }) => void;
 };
 
@@ -21,7 +24,14 @@ type Props = {
  * Room
  * Create or access to a room
  */
-const Room = ({ match, game, updateGame, proposedGame }: Props): JSX.Element => {
+const Room = ({
+  match,
+  game,
+  updateGame,
+  proposedGame,
+  history,
+  users,
+}: Props): JSX.Element | null => {
   const socketDomain =
     window.location.host === 'localhost:3000' ? 'localhost:5000' : 'sandboard-server.herokuapp.com';
   const protocol = window.location.host.indexOf('localhost') > -1 ? 'http' : 'https';
@@ -84,16 +94,14 @@ const Room = ({ match, game, updateGame, proposedGame }: Props): JSX.Element => 
 
   console.log('[Room] status', status);
 
-  if (!proposedGame && !game) {
-    return (
-      <Link className="Room__button" to="/">
-        Go
-      </Link>
-    );
-  }
-
   return (
     <div className="Room">
+      {!proposedGame && !game && (
+        <div className="Room__unknown">
+          <p>Room Unknown</p>
+          <Button onClick={() => history.push('/')}>Back</Button>
+        </div>
+      )}
       {status === USER_STATUS.IN_GAME && (
         <div className="Room__game">
           {!!game && <Game game={game} updateGame={updateSocketGame} resetGame={resetGame} />}
@@ -107,21 +115,21 @@ const Room = ({ match, game, updateGame, proposedGame }: Props): JSX.Element => 
       {status === USER_STATUS.IN_LOBBY && (
         <div className="Room__lobby">
           <p>Welcome to this room</p>
-          <button onClick={tryEnterGame} type="button" className="primary-button">
-            Enter Game
-          </button>
+          <pre>{JSON.stringify(users, null, 2)}</pre>
+          <Button onClick={tryEnterGame}>Enter Game</Button>
         </div>
       )}
     </div>
   );
 };
 
-const mapStateToProps = ({ rtc: { game, proposedGame } }: Store) => ({
+const mapStateToProps = ({ rtc: { game, proposedGame, users } }: Store) => ({
   game,
   proposedGame,
+  users,
 });
 const mapDispatchToProps = () => ({
   updateGame: ({ game, users }: { game?: GameUpdate | Game; users?: Array<User> }) =>
     store.dispatch({ type: 'UPDATE_GAME', game, users }),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(Room);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Room));

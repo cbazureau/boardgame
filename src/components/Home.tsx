@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import store from '../store';
 import game from '../game/chess';
 import { prepare } from '../utils/game';
+import Button from './Button';
 import './Home.css';
 
 const chessGame = prepare(game);
@@ -37,7 +38,7 @@ const Home = ({ setProposedGame, proposedGame }: Props): JSX.Element => {
       </select>
       {proposedGame && (
         <Link className="Home__button" to={`/r/${DEFAULT_ROOM}`}>
-          Go
+          <Button>Start a new room</Button>
         </Link>
       )}
     </div>

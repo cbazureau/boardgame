@@ -1,12 +1,24 @@
-
 .Home {
+  position: relative;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
+  min-height: 100vh;
 }
 
-.Home__recent {
-  display: block;
-  color: #4285F4;
-  margin: 1ex 1em;
+.Home__title {
+  font-size: 5rem;
+  margin: 0;
+  padding: 0;
+  text-transform: uppercase;
+  font-style: normal;
+}
+
+.Home__select {
+  width: 300px;
+  fill: var(--gray);
+  margin: 32px 0;
+  font-size: 2.3rem;
+  padding: 8px 16px;
 }
