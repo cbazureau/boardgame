@@ -17,8 +17,8 @@ type Props = {
   match: any;
   history: any;
   game: Game | void;
-  users: Array<User>;
   updateGame: (updateInfos: { game?: GameUpdate | Game; users?: Array<User> }) => void;
+  updateCurrentUser: (user: User) => void;
 };
 
 /**
@@ -31,7 +31,7 @@ const Room = ({
   updateGame,
   proposedGame,
   history,
-  users,
+  updateCurrentUser,
 }: Props): JSX.Element | null => {
   const socketDomain =
     window.location.host === 'localhost:3000' ? 'localhost:5000' : 'sandboard-server.herokuapp.com';
@@ -59,6 +59,7 @@ const Room = ({
       const onEnterLobby = ({ currentUser }: { currentUser: User }) => {
         console.log('[Room] onEnterLobby', { currentUser });
         setStatus(USER_STATUS.IN_LOBBY);
+        updateCurrentUser(currentUser);
       };
       socket.current.on('enter-lobby', onEnterLobby);
       socket.current.on('enter-game', onEnterGame);
@@ -67,7 +68,7 @@ const Room = ({
       // Emit a welcome to enter in the Lobby
       socket.current.emit('welcome-lobby', { roomId, proposedGame });
     }
-  }, [roomId, status, updateGame, proposedGame]);
+  }, [roomId, status, updateGame, proposedGame, updateCurrentUser]);
 
   /**
    * handleHangup
@@ -117,7 +118,7 @@ const Room = ({
       {status === USER_STATUS.IN_LOBBY && (
         <div className="Room__lobby">
           <p>Welcome to this room</p>
-          <Users users={users} />
+          <Users className="Users_lobby" />
           <input
             value={username}
             onChange={e => setUsername(e.target.value)}
@@ -130,13 +131,14 @@ const Room = ({
   );
 };
 
-const mapStateToProps = ({ rtc: { game, proposedGame, users } }: Store) => ({
+const mapStateToProps = ({ rtc: { game, proposedGame } }: Store) => ({
   game,
   proposedGame,
-  users,
 });
 const mapDispatchToProps = () => ({
   updateGame: ({ game, users }: { game?: GameUpdate | Game; users?: Array<User> }) =>
     store.dispatch({ type: 'UPDATE_GAME', game, users }),
+  updateCurrentUser: (currentUser: User) =>
+    store.dispatch({ type: 'UPDATE_CURRENTUSER', currentUser }),
 });
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Room));

@@ -4,6 +4,7 @@ const initalState: RTCstore = {
   game: undefined,
   proposedGame: null,
   users: [],
+  currentUser: undefined,
   isVideoEnabled: true,
   isAudioEnabled: true,
 };
@@ -12,6 +13,7 @@ type ActionType = {
   type: string;
   proposedGame?: Game | null;
   game?: GameUpdate | Game;
+  currentUser?: User;
   users?: Array<User>;
   room?: Room;
   isVideoEnabled?: boolean;
@@ -35,6 +37,9 @@ const rtcReducer = (state: RTCstore = initalState, action: ActionType): RTCstore
       };
     case 'SET_PROPOSED_GAME':
       return { ...state, proposedGame: action.proposedGame || null };
+    case 'UPDATE_CURRENTUSER':
+      console.log('UPDATE_CURRENTUSER', action.currentUser);
+      return { ...state, currentUser: action.currentUser };
     case 'SET_VIDEO':
       return { ...state, isVideoEnabled: !!action.isVideoEnabled };
     case 'SET_AUDIO':

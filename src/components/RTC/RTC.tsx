@@ -24,7 +24,6 @@ type Props = {
   setVideo: (val: boolean) => void;
   setAudio: (val: boolean) => void;
   onHangUp: () => void;
-  users: Array<User>;
 };
 
 /**
@@ -38,7 +37,6 @@ const RTC = ({
   setAudio,
   socket,
   onHangUp: onGameHangUp,
-  users,
 }: Props): JSX.Element => {
   const [rtcStatus, setRTCStatus] = useState(RTC_STATUS.OFF);
   const [user, setUser] = useState<string>('');
@@ -224,7 +222,7 @@ const RTC = ({
       })}
     >
       <div className="RTC_users">
-        <Users users={users} />
+        <Users className="Users_rtc" />
       </div>
       {rtcStatus === RTC_STATUS.OFF && (
         <div className="RTC__box">
@@ -282,7 +280,6 @@ const RTC = ({
 const mapStateToProps = ({ rtc: { isVideoEnabled, isAudioEnabled, users } }: Store) => ({
   isVideoEnabled,
   isAudioEnabled,
-  users,
 });
 const mapDispatchToProps = () => ({
   setVideo: (enabled: boolean) => store.dispatch({ type: 'SET_VIDEO', isVideoEnabled: enabled }),

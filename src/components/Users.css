@@ -1,6 +1,6 @@
 .Users {
   display: flex;
-  margin: 32px 0;
+  margin: 16px;
 }
 
 .Users__user {
@@ -11,4 +11,21 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 16px;
+}
+
+.is-me {
+  color: var(--green);
+  fill: currentColor;
+}
+
+.Users_rtc {
+  flex-direction: column;
+}
+
+.Users_rtc .Users__user {
+  margin: 4px 16px;
+}
+.Users__icon {
+  width: 75px;
 }

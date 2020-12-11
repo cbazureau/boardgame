@@ -113,6 +113,7 @@ type Room = string;
 type RTCstore = {
   proposedGame: Game | null;
   game?: Game;
+  currentUser?: User;
   users: Array<User>;
   isVideoEnabled: boolean;
   isAudioEnabled: boolean;
