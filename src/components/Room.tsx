@@ -112,13 +112,13 @@ const Room = ({
       )}
       {status === USER_STATUS.IN_GAME && (
         <div className="Room__RTC">
-          <RTC socket={socket} onHangUp={onHangUp} />
+          <Users className="Users_rtc" socket={socket} />
         </div>
       )}
       {status === USER_STATUS.IN_LOBBY && (
         <div className="Room__lobby">
           <p>Welcome to this room</p>
-          <Users className="Users_lobby" />
+          <Users className="Users_lobby" socket={socket} />
           <input
             value={username}
             onChange={e => setUsername(e.target.value)}

@@ -27,5 +27,17 @@
   margin: 4px 16px;
 }
 .Users__icon {
+  position: relative;
   width: 75px;
+}
+
+.User__video {
+  height: 75px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border-radius: 50%;
+  width: 75px;
+  object-fit: cover;
 }

@@ -222,7 +222,7 @@ const RTC = ({
       })}
     >
       <div className="RTC_users">
-        <Users className="Users_rtc" />
+        <Users className="Users_rtc" socket={socket} />
       </div>
       {rtcStatus === RTC_STATUS.OFF && (
         <div className="RTC__box">
