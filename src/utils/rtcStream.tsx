@@ -38,17 +38,14 @@ const errorHandler = (error: any) => {
  */
 const createdDescription = (description: RTCSessionDescription, peerUuid: string) => {
   const localUuid = currentUser.id;
-  console.log(`got description, peer ${peerUuid}`);
   peerConnections[peerUuid].pc
     .setLocalDescription(description)
     .then(() => {
-      currentSocket.send(
-        JSON.stringify({
-          sdp: peerConnections[peerUuid].pc.localDescription,
-          uuid: localUuid,
-          dest: peerUuid,
-        }),
-      );
+      currentSocket.send({
+        sdp: peerConnections[peerUuid].pc.localDescription,
+        uuid: localUuid,
+        dest: peerUuid,
+      });
     })
     .catch(errorHandler);
 };
@@ -60,7 +57,6 @@ const createdDescription = (description: RTCSessionDescription, peerUuid: string
  */
 const checkPeerDisconnect = (event: RTCPeerConnection, peerUuid: string) => {
   const state = peerConnections[peerUuid].pc.iceConnectionState;
-  console.log(`connection with peer ${peerUuid} ${state}`);
   if (state === 'failed' || state === 'closed' || state === 'disconnected') {
     delete peerConnections[peerUuid];
     currentVideoRefs[peerUuid].srcObject = null;
@@ -75,12 +71,11 @@ const checkPeerDisconnect = (event: RTCPeerConnection, peerUuid: string) => {
 const gotIceCandidate = (event: RTCPeerConnectionIceEvent, peerUuid: string) => {
   const localUuid = currentUser.id;
   if (event.candidate != null) {
-    currentSocket.send(JSON.stringify({ ice: event.candidate, uuid: localUuid, dest: peerUuid }));
+    currentSocket.send({ ice: event.candidate, uuid: localUuid, dest: peerUuid });
   }
 };
 
 const gotRemoteStream = (event: RTCTrackEvent, peerUuid: string) => {
-  console.log(`got remote stream, peer ${peerUuid}`);
   const stream = event.streams[0];
   currentVideoRefs[peerUuid].srcObject = stream;
 };
@@ -88,12 +83,10 @@ const gotRemoteStream = (event: RTCTrackEvent, peerUuid: string) => {
 /**
  * setUpPeer
  * @param peerUuid
- * @param displayName
  * @param initCall
  */
-const setUpPeer = (peerUuid: string, displayName: string, initCall = false) => {
+const setUpPeer = (peerUuid: string, initCall = false) => {
   peerConnections[peerUuid] = {
-    displayName,
     pc: new RTCPeerConnection(peerConnectionConfig),
   };
   peerConnections[peerUuid].pc.onicecandidate = (event: RTCPeerConnectionIceEvent) =>
@@ -115,26 +108,29 @@ const setUpPeer = (peerUuid: string, displayName: string, initCall = false) => {
  * onMessage
  * @param message
  */
-const onMessage = (message: { data: string }) => {
-  const signal = JSON.parse(message.data);
+const onMessage = (signal: {
+  uuid: string;
+  dest: string;
+  sdp: RTCSessionDescriptionInit;
+  ice: RTCIceCandidateInit;
+}) => {
   const peerUuid = signal.uuid;
   const localUuid = currentUser.id;
 
   // Ignore messages that are not for us or from ourselves
   if (peerUuid === localUuid || (signal.dest !== localUuid && signal.dest !== 'all')) return;
 
-  if (signal.displayName && signal.dest === 'all') {
+  if (!signal.sdp && !signal.ice && signal.dest === 'all') {
     // set up peer connection object for a newcomer peer
-    setUpPeer(peerUuid, signal.displayName);
-    currentSocket.send(
-      JSON.stringify({ displayName: currentUser.username, uuid: localUuid, dest: peerUuid }),
-    );
-  } else if (signal.displayName && signal.dest === localUuid) {
+    setUpPeer(peerUuid);
+    currentSocket.send({ uuid: localUuid, dest: peerUuid });
+  } else if (!signal.sdp && !signal.ice && signal.dest === localUuid) {
     // initiate call if we are the newcomer peer
-    setUpPeer(peerUuid, signal.displayName, true);
+    setUpPeer(peerUuid, true);
   } else if (signal.sdp) {
+    const remoteDescription = new RTCSessionDescription(signal.sdp);
     peerConnections[peerUuid].pc
-      .setRemoteDescription(new RTCSessionDescription(signal.sdp))
+      .setRemoteDescription(remoteDescription)
       .then(() => {
         // Only create answers in response to offers
         if (signal.sdp.type === 'offer') {
@@ -200,9 +196,10 @@ export const start = ({
       // set up websocket and message all existing clients
       .then(() => {
         currentSocket.on('message', onMessage);
-        currentSocket.send(
-          JSON.stringify({ displayName: currentUser.username, uuid: currentUser.id, dest: 'all' }),
-        );
+        currentSocket.send({
+          uuid: currentUser.id,
+          dest: 'all',
+        });
       })
       .catch(errorHandler);
   }

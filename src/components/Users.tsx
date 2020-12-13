@@ -11,7 +11,8 @@ type Props = {
   users: Array<User>;
   currentUser?: User;
   className?: string;
-  socket: any;
+  socket?: any;
+  isInLobby?: boolean;
 };
 
 type VideoRefs = {
@@ -21,11 +22,15 @@ type VideoRefs = {
 /**
  * Users
  */
-const Users = ({ users, currentUser, className, socket }: Props): JSX.Element => {
+const Users = ({ users, currentUser, className, socket, isInLobby }: Props): JSX.Element => {
   const videoRefs = useRef<VideoRefs>({});
+  const startDone = useRef<boolean>(false);
   useEffect(() => {
-    if (currentUser) start({ videoRefs: videoRefs.current, currentUser, socket });
-  }, [currentUser, socket]);
+    if (currentUser && !isInLobby && !startDone.current) {
+      start({ videoRefs: videoRefs.current, currentUser, socket });
+      startDone.current = true;
+    }
+  }, [currentUser, socket, isInLobby]);
   return (
     <div className={classnames('Users', className)}>
       {users.map(user => {
@@ -39,14 +44,16 @@ const Users = ({ users, currentUser, className, socket }: Props): JSX.Element =>
           >
             <div className="Users__icon" title={user.id}>
               <UserIcon />
-              <video
-                className="User__video"
-                ref={r => {
-                  if (r) videoRefs.current[user.id] = r;
-                }}
-                autoPlay
-                muted={isMe}
-              />
+              {!isInLobby && (
+                <video
+                  className="User__video"
+                  ref={r => {
+                    if (r) videoRefs.current[user.id] = r;
+                  }}
+                  autoPlay
+                  muted={isMe}
+                />
+              )}
             </div>
             <span>{user.serverStatus}</span>
             <span>{user.username || '....'}</span>
@@ -60,6 +67,8 @@ const Users = ({ users, currentUser, className, socket }: Props): JSX.Element =>
 Users.defaultProps = {
   className: undefined,
   currentUser: undefined,
+  isInLobby: false,
+  socket: undefined,
 };
 
 const mapStateToProps = ({

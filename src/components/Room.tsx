@@ -8,7 +8,6 @@ import useBeforeUnload from '../utils/useBeforeUnload';
 import './Room.css';
 import Game from './Game';
 import { USER_STATUS } from '../utils/status';
-import RTC from './RTC/RTC';
 import Button from './Button';
 import Users from './Users';
 
@@ -112,13 +111,13 @@ const Room = ({
       )}
       {status === USER_STATUS.IN_GAME && (
         <div className="Room__RTC">
-          <Users className="Users_rtc" socket={socket} />
+          <Users className="Users_rtc" socket={socket.current} />
         </div>
       )}
       {status === USER_STATUS.IN_LOBBY && (
         <div className="Room__lobby">
           <p>Welcome to this room</p>
-          <Users className="Users_lobby" socket={socket} />
+          <Users isInLobby className="Users_lobby" />
           <input
             value={username}
             onChange={e => setUsername(e.target.value)}
