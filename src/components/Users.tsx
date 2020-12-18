@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/media-has-caption */
-import React, { useEffect, useRef } from 'react';
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/interactive-supports-focus */
+import React, { useEffect, useRef, useState } from 'react';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import UserIcon from './Icons/UserIcon';
@@ -25,12 +27,13 @@ type VideoRefs = {
 const Users = ({ users, currentUser, className, socket, isInLobby }: Props): JSX.Element => {
   const videoRefs = useRef<VideoRefs>({});
   const startDone = useRef<boolean>(false);
+  const [isRTCActive, setRTCActive] = useState<boolean>(false);
   useEffect(() => {
-    if (currentUser && !isInLobby && !startDone.current) {
+    if (currentUser && !isInLobby && !startDone.current && isRTCActive) {
       start({ videoRefs: videoRefs.current, currentUser, socket });
       startDone.current = true;
     }
-  }, [currentUser, socket, isInLobby]);
+  }, [currentUser, socket, isInLobby, isRTCActive]);
   return (
     <div className={classnames('Users', className)}>
       {users.map(user => {
@@ -42,7 +45,12 @@ const Users = ({ users, currentUser, className, socket, isInLobby }: Props): JSX
             })}
             key={user.id}
           >
-            <div className="Users__icon" title={user.id}>
+            <div
+              className="Users__icon"
+              title={user.id}
+              onClick={() => setRTCActive(true)}
+              role="button"
+            >
               <UserIcon />
               {!isInLobby && (
                 <video
